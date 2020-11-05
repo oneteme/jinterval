@@ -29,17 +29,14 @@ public class PeriodTest extends IntervalTest {
 		
 		private final ChronoUnit temporalUnit;
 
+		@SuppressWarnings("unchecked")
 		public PeriodImpl(T start, T exclusifEnd, ChronoUnit temporalUnit) {
-			super(start, exclusifEnd, null);
+			super(start, exclusifEnd, (o,v)->(T) o.plus(v, temporalUnit));
 			this.temporalUnit = temporalUnit;
 		}
 		
-		@SuppressWarnings("unchecked")
-		T shift(T obj, int value){
-			return (T) obj.plus(value, temporalUnit);
-		}
-		
-		PeriodImpl<T> copy(T s, T e){
+		@Override
+		PeriodImpl<T> create(T s, T e){
 			return new PeriodImpl<>(s, e, temporalUnit);
 		}
 	}

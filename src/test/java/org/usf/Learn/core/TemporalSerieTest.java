@@ -7,7 +7,7 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.usf.Learn.core.Utils.assertException;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -122,11 +121,6 @@ class TemporalSerieTest {
 		assertArrayEquals(collection.toArray(), serie.getPoints().toArray());
 	}
 
-	void assertException(Class<? extends Exception> expectedType, Executable executable, String expectedMessage) {
-		Exception e = assertThrows(expectedType, executable);
-		assertEquals(expectedMessage, e.getMessage());
-	}
-	
 	private static Stream<Arguments> caseFactory() {
 	    return Stream.of(
     		Arguments.of(LocalDate.of(2020, 1, 1), MONTHS, 1),

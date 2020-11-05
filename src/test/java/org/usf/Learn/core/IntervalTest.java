@@ -11,10 +11,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.usf.learn.core.Interval;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 class IntervalTest {
 
@@ -86,7 +82,7 @@ class IntervalTest {
 		assertFalse(interval.intersectInterval(interval.shiftExclusifEnd(0, 0))); //??
 	}
 
-	private static Stream<Arguments> caseFactory() {
+	static Stream<Arguments> caseFactory() {
 	    return Stream.of(
     		Arguments.arguments(new IntervalImpl<>(1, 5, shiftInt)),
     		Arguments.arguments(new IntervalImpl<>(-5L, 5L, shiftLong)),
@@ -99,43 +95,5 @@ class IntervalTest {
 	private static BiFunction<Long, Integer, Long> shiftLong = (a,b)-> a+b;
 	private static BiFunction<Double, Integer, Double> shiftDouble = (a,b)-> a+b;
 	private static BiFunction<BigDecimal, Integer, BigDecimal> shiftBigDecimal = (a,b)-> a.add(BigDecimal.valueOf(b));
-		
-
-	@Getter
-	@RequiredArgsConstructor
-	static class IntervalImpl<T extends Comparable<? super T>> implements Interval<T> {
-		
-		private final T start, exclusifEnd;
-		private final BiFunction<T, Integer, T> fn;
-		
-		final T shiftStart(int v){
-			return shift(start, v);
-		}
-		final T shiftExclusifEnd(int v){
-			return shift(exclusifEnd, v);
-		}
-
-		final IntervalImpl<T> shift(int v1, int v2){
-			return copy(shift(start, v1), shift(exclusifEnd, v2));
-		}
-		final IntervalImpl<T> shiftStart(int v1, int v2){
-			return copy(shift(start, v1), shift(start, v2));
-		}
-		final IntervalImpl<T> shiftExclusifEnd(int v1, int v2){
-			return copy(shift(exclusifEnd, v1), shift(exclusifEnd, v2));
-		}
-
-		IntervalImpl<T> copy(T s, T e){
-			return new IntervalImpl<>(s, e, fn);
-		}
-		
-		T shift(T obj, int value){
-			return fn.apply(obj, value);
-		}
-		@Override 
-		public String toString() {
-			return "[" + getStart() + ", " + getExclusifEnd() + "[";
-		}
-	}
 
 }

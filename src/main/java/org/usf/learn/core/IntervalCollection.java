@@ -2,7 +2,6 @@ package org.usf.learn.core;
 
 import static org.usf.learn.core.partition.Partitions.intervalParts;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -25,21 +24,17 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 	private final List<? extends Interval<T>> intervals;
 	
 	public boolean isMissingIntervals() {
-		
-		return isMissingIntervals(null, null);
+
+		return testIf(null, null, MISSING_INTERVALS_FILTER);
 	}
 	public boolean isMissingIntervals(T start, T exclusifEnd) {
-		try {
-			requiredNotMissingIntervals	(start, exclusifEnd);
-		} catch (MissingIntervalException e) {
-			return true;
-		}
-		return false;
+
+		return testIf(start, exclusifEnd, MISSING_INTERVALS_FILTER);
 	}
 
 	public void requiredNotMissingIntervals() {
 	
-		requiredNotMissingIntervals(null, null);
+		throwsIf(null, null, MISSING_INTERVALS_FILTER);
 	}
 	public void requiredNotMissingIntervals(T start, T exclusifEnd) {
 
@@ -47,47 +42,23 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 	}
 	
 	public boolean isOverlapIntervals() {
-		
-		return isOverlapIntervals(null, null);
-	}
-	public boolean isOverlapIntervals(T start, T exclusifEnd) {
-		try {
-			requiredNotOverlapIntervals(start, exclusifEnd);
-		} catch (OverlapIntervalException e) {
-			return true;
-		}
-		return false;
+
+		return testIf(null, null, OVERLAP_INTERVALS_FILTER);
 	}
 
 	public void requiredNotOverlapIntervals() {
 
-		acceptIf(null, null, OVERLAP_INTERVALS_FILTER , OverlapIntervalException::new);
-	}
-	public void requiredNotOverlapIntervals(T start, T exclusifEnd) {
-
-		throwsIf(start, exclusifEnd, OVERLAP_INTERVALS_FILTER);
+		throwsIf(null, null, OVERLAP_INTERVALS_FILTER);
 	}
 	
 	public boolean isLinkedIntervals() {
 		
-		return isLinkedIntervals(null, null);
-	}
-	public boolean isLinkedIntervals(T start, T exclusifEnd) {
-		try {
-			requiredLinkedIntervals	(start, exclusifEnd);
-		} catch (MissingIntervalException | OverlapIntervalException e) {
-			return false;
-		}
-		return true;
+		return !testIf(null, null, UNLINKED_INTERVALS_FILTER);
 	}
 
 	public void requiredLinkedIntervals() {
-	
-		requiredLinkedIntervals(null, null);
-	}
-	public void requiredLinkedIntervals(T start, T exclusifEnd) {
 
-		throwsIf(start, exclusifEnd, UNLINKED_INTERVALS_FILTER);
+		throwsIf(null, null, UNLINKED_INTERVALS_FILTER);
 	}
 
 	public List<Interval<T>> missingIntervals() {
@@ -95,33 +66,27 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 		return filter(null, null, MISSING_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
 	}
 	public List<Interval<T>> missingIntervals(T start, T exclusifEnd) {
-		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
-	}
-	
-	public <I extends Interval<T>, R> R missingIntervals(BiFunction<T, T, I> fn, Collector<I, Collection<I>, R> collector) {
-
-		return filter(null, null, MISSING_INTERVALS_FILTER, fn, collector);
-	}
-	public <I extends Interval<T>, R> R missingIntervals(T start, T exclusifEnd, BiFunction<T, T, I> fn, Collector<I, Collection<I>, R> collector) {
 		
-		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, fn, collector);
+		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
 	}
 	
 	public List<Interval<T>> overlapIntervals() {
 
 		return filter(null, null, OVERLAP_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
 	}
-	public List<Interval<T>> overlapIntervals(T start, T exclusifEnd) {
-		return filter(start, exclusifEnd, OVERLAP_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
+
+	public <I extends Interval<T>, R> R collectMissingIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
+
+		return filter(null, null, MISSING_INTERVALS_FILTER, fn, collector);
+	}
+	public <I extends Interval<T>, R> R collectMissingIntervals(T start, T exclusifEnd, BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
+		
+		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, fn, collector);
 	}
 	
-	public <I extends Interval<T>, R> R overlapIntervals(BiFunction<T, T, I> fn, Collector<I, Collection<I>, R> collector) {
+	public <I extends Interval<T>, R> R collectOverlapIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
 
 		return filter(null, null, OVERLAP_INTERVALS_FILTER, fn, collector);
-	}
-	public <I extends Interval<T>, R> R overlapIntervals(T start, T exclusifEnd, BiFunction<T, T, I> fn, Collector<I, Collection<I>, R> collector) {
-		
-		return filter(start, exclusifEnd, OVERLAP_INTERVALS_FILTER, fn, collector);
 	}
 
 	public <I extends Interval<T>, C, R> R filter(T start, T exclusifEnd, IntPredicate intervalCount, BiFunction<T, T, I> fn, Collector<I, C, R> collector) {
@@ -140,7 +105,17 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 		});
 	}
 	
-	public void throwsIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate) {
+	private boolean testIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate) {
+		
+		try {
+			throwsIf(start, exclusifEnd, nIntervalPredicate);
+		} catch (Exception e) {
+			return true;
+		}
+		return false;
+	}
+	
+	private void throwsIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate) {
 
 		intervalParts(intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
 			if(nIntervalPredicate.test(indexs.length)) {

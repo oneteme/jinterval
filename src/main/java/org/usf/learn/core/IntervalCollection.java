@@ -74,6 +74,11 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 
 		return filter(null, null, OVERLAP_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
 	}
+	
+	public List<Interval<T>> dirtyIntervals() {
+
+		return filter(null, null, UNLINKED_INTERVALS_FILTER, ImmutableInterval::new, Collectors.toList());
+	}
 
 	public <I extends Interval<T>, R> R collectMissingIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
 
@@ -87,6 +92,11 @@ public class IntervalCollection<T extends Comparable<? super T>> {
 	public <I extends Interval<T>, R> R collectOverlapIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
 
 		return filter(null, null, OVERLAP_INTERVALS_FILTER, fn, collector);
+	}
+
+	public <I extends Interval<T>, R> R collectDirtyIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
+
+		return filter(null, null, UNLINKED_INTERVALS_FILTER, fn, collector);
 	}
 
 	public <I extends Interval<T>, C, R> R filter(T start, T exclusifEnd, IntPredicate intervalCount, BiFunction<T, T, I> fn, Collector<I, C, R> collector) {

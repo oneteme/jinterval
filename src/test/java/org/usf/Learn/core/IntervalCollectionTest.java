@@ -6,6 +6,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.usf.Learn.core.Utils.assertException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,6 +36,10 @@ class IntervalCollectionTest {
 		testMissingInterval(asList(interval, interval.next(0, 1)), emptyList(), interval);
 		testMissingInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), interval);
 
+		testMissingInterval(asList(interval, interval.prev(-2, -1)), singletonList(interval.prev(-1, 0)), interval);
+		testMissingInterval(asList(interval, interval.next(1, 2)), singletonList(interval.next(0, 1)), interval);
+		testMissingInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), asList(interval.prev(-1, 0), interval.next(0, 1)), interval);
+
 		testMissingInterval(asList(interval, interval.prev(0, 1)), emptyList(), interval);
 		testMissingInterval(asList(interval, interval.next(-1, 0)), emptyList(), interval);
 		testMissingInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), emptyList(), interval);
@@ -43,8 +48,8 @@ class IntervalCollectionTest {
 		testMissingInterval(asList(interval, interval.next(-1, 1)), emptyList(), interval);
 		testMissingInterval(asList(interval, interval.prev(-1, 1), interval.next(-1, 1)), emptyList(), interval);
 		
-		testMissingInterval(asList(interval, interval.prev(-5, 2), interval.next(2, 10)), singletonList(interval.next(0, 2)), interval);
-		testMissingInterval(asList(interval, interval.prev(-10, -2), interval.next(-2, 5)), singletonList(interval.prev(-2, 0)), interval);
+		testMissingInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), singletonList(interval.prev(-2, 0)), interval);
+		testMissingInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), singletonList(interval.next(0, 2)), interval);
 	}
 	
 	@ParameterizedTest(name="{0}")
@@ -59,6 +64,10 @@ class IntervalCollectionTest {
 		testOverlapInterval(asList(interval, interval.next(0, 1)), emptyList(), interval);
 		testOverlapInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), interval);
 
+		testOverlapInterval(asList(interval, interval.prev(-2, -1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.next(1, 2)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), emptyList(), interval);
+
 		testOverlapInterval(asList(interval, interval.prev(0, 1)), asList(interval.prev(0, 1)), interval);
 		testOverlapInterval(asList(interval, interval.next(-1, 0)), asList(interval.next(-1, 0)), interval);
 		testOverlapInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), asList(interval.prev(0, 1), interval.next(-1, 0)), interval);
@@ -71,9 +80,38 @@ class IntervalCollectionTest {
 		testOverlapInterval(asList(interval, interval.next(1, 2)), emptyList(), interval);
 		testOverlapInterval(asList(interval, interval.next(1, 2), interval.prev(-2, -1)), emptyList(), interval);
 
-		testOverlapInterval(asList(interval, interval.prev(-5, 2), interval.next(2, 10)), singletonList(interval.prev(0, 2)), interval);
-		testOverlapInterval(asList(interval, interval.prev(-10, -2), interval.next(-2, 5)), singletonList(interval.next(-2, 0)), interval);
+		testOverlapInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), singletonList(interval.next(-2, 0)), interval);
+		testOverlapInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), singletonList(interval.prev(0, 2)), interval);
 	}
+	
+	@ParameterizedTest(name="{0}")
+	@MethodSource("caseFactory")
+	<T extends Comparable<? super T>> void testLinkedIntervals(IntervalImpl<T> interval) {
+		
+		testLinkedInterval(emptyList(), emptyList(), null, null, interval);
+		testLinkedInterval(singletonList(interval), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval), singletonList(interval), "overlap interval", OverlapIntervalException.class, interval);
+
+		testLinkedInterval(asList(interval, interval.prev(-1, 0)), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval.next(0, 1)), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), null, null, interval);
+
+		testLinkedInterval(asList(interval, interval.prev(-2, -1)), singletonList(interval.prev(-1, 0)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.next(1, 2)), singletonList(interval.next(0, 1)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), asList(interval.prev(-1, 0), interval.next(0, 1)), "missing interval", MissingIntervalException.class, interval);
+
+		testLinkedInterval(asList(interval, interval.prev(0, 1)), asList(interval.prev(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.next(-1, 0)), asList(interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), asList(interval.prev(0, 1), interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		
+		testLinkedInterval(asList(interval, interval.prev(-1, 1)), asList(interval.prev(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.next(-1, 1)), asList(interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.prev(-1, 1), interval.next(-1, 1)), asList(interval.prev(0, 1), interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		
+		testLinkedInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), asList(interval.prev(-2, 0), interval.next(-2, 0)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), asList(interval.prev(0, 2), interval.next(0, 2)), "overlap interval", OverlapIntervalException.class, interval);
+	}
+	
 	
 	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
 		
@@ -109,7 +147,7 @@ class IntervalCollectionTest {
 			assertEquals(true, ic.isMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()));
 			assertArrayEquals(expectedIntervals.toArray(), ic.missingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()).toArray());
 			assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd(), origin::create, Collectors.toList()).toArray());
-			Utils.assertException(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()), "missing interval");
+			assertException(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()), "missing interval");
 		}
 	}
 	
@@ -122,10 +160,29 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.collectOverlapIntervals(origin::create, Collectors.toList()).toArray());
 
 		if(!expectedIntervals.isEmpty()) {
-			Utils.assertException(OverlapIntervalException.class, ()-> ic.requiredNotOverlapIntervals(), "overlap interval");
+			assertException(OverlapIntervalException.class, ()-> ic.requiredNotOverlapIntervals(), "overlap interval");
 		}
 		else {
 			assertDoesNotThrow(()-> ic.requiredNotOverlapIntervals());
+		}
+	}
+	
+	private <T extends Comparable<? super T>> void testLinkedInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals,
+			
+			String exMessage, Class<? extends RuntimeException> clazz, IntervalImpl<T> origin) {
+		
+		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
+		
+		assertEquals(exMessage == null, ic.isLinkedIntervals());
+		assertArrayEquals(expectedIntervals.toArray(), ic.dirtyIntervals().toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectDirtyIntervals(origin::create, Collectors.toList()).toArray());
+		
+
+		if(exMessage != null) {
+			assertException(clazz, ()-> ic.requiredLinkedIntervals(), exMessage);
+		}
+		else {
+			assertDoesNotThrow(()-> ic.requiredLinkedIntervals());
 		}
 	}
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @SuppressWarnings("serial")
 @Getter
-public class MissingIntervalException extends RuntimeException {
+public final class MissingIntervalException extends RuntimeException {
 
 	private final Object start;
 	private final Object exclusifEnd;

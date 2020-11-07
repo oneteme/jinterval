@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.usf.learn.core.Interval;
+import org.usf.learn.core.RegularInterval;
 import org.usf.learn.core.IntervalCollection;
 import org.usf.learn.exception.MissingIntervalException;
 import org.usf.learn.exception.OverlapIntervalException;
@@ -116,8 +116,8 @@ class IntervalCollectionTest {
 	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
-		T min = intervals.stream().map(Interval::getStart).min(Comparator.naturalOrder()).orElse(null);
-		T max = intervals.stream().map(Interval::getExclusifEnd).max(Comparator.naturalOrder()).orElse(null);
+		T min = intervals.stream().map(RegularInterval::getStart).min(Comparator.naturalOrder()).orElse(null);
+		T max = intervals.stream().map(RegularInterval::getExclusifEnd).max(Comparator.naturalOrder()).orElse(null);
 		
 		assertEquals(!expectedIntervals.isEmpty(), ic.isMissingIntervals());
 		assertEquals(!expectedIntervals.isEmpty(), ic.isMissingIntervals(null, null));
@@ -177,7 +177,6 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.dirtyIntervals().toArray());
 		assertArrayEquals(expectedIntervals.toArray(), ic.collectDirtyIntervals(origin::create, Collectors.toList()).toArray());
 		
-
 		if(exMessage != null) {
 			assertException(clazz, ()-> ic.requiredLinkedIntervals(), exMessage);
 		}

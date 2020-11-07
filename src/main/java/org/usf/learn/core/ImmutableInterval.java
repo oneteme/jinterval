@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
+public class ImmutableInterval<T extends Comparable<? super T>> implements RegularInterval<T> {
 	
 	private final T start;
 	private final T exclusifEnd;

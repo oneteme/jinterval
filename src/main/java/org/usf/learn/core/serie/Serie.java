@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import org.usf.learn.core.Period;
+import org.usf.learn.core.RegularInterval;
+import org.usf.learn.core.HasTemporalUnit;
 
-public interface Serie<T extends Temporal & Comparable<? super T>, P> extends Period<T> {
+public interface Serie<T extends Temporal & Comparable<? super T>, P> extends RegularInterval<T>, HasTemporalUnit {
 
 	int getStep();
 	

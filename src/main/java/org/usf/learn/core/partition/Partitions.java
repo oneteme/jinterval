@@ -16,8 +16,8 @@ import java.util.function.ToIntBiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.usf.learn.core.Interval;
-import org.usf.learn.core.Period;
+import org.usf.learn.core.RegularInterval;
+import org.usf.learn.core.HasTemporalUnit;
 import org.usf.learn.core.partition.Partition.SubItem;
 import org.usf.learn.core.serie.Serie;
 
@@ -39,31 +39,31 @@ public final class Partitions {
 		return ofPeriods(series, requiredSameIntField(series, Serie::getStep), Serie::getPoint, start, exclusifEnd);
 	}
 	
-	public static <U, T extends Temporal & Comparable<? super T>, P extends Period<T>> PartitionMap<T, U> ofPeriods(List<P> periods, int step, SubItem<P, U> fn) {
+	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> PartitionMap<T, U> ofPeriods(List<P> periods, int step, SubItem<P, U> fn) {
 		
 		return ofPeriods(periods, step, fn, null, null);
 	}
 	
-	public static <U, T extends Temporal & Comparable<? super T>, P extends Period<T>> PartitionMap<T, U> 
+	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> PartitionMap<T, U> 
 		ofPeriods(List<P> periods, int step, SubItem<P, U> fn, T start, T exclusifEnd) {
 		
-		ChronoUnit unit = requiredSameField(periods, Period::getTemporalUnit);
+		ChronoUnit unit = requiredSameField(periods, HasTemporalUnit::getTemporalUnit);
 		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> until(min, sp, unit, step), fn);
 	}
 	
 
-	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> PartitionMap<T, P> ofIntervals(Collection<P> periods) {
+	public static <T extends Temporal & Comparable<? super T>, P extends RegularInterval<T>> PartitionMap<T, P> ofIntervals(Collection<P> periods) {
 		return ofIntervals(periods, null, null);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> PartitionMap<T, P> ofIntervals(Collection<P> periods, T start, T exclusifEnd) {
+	public static <T extends Temporal & Comparable<? super T>, P extends RegularInterval<T>> PartitionMap<T, P> ofIntervals(Collection<P> periods, T start, T exclusifEnd) {
 		
 		AtomicInteger cp = new AtomicInteger();
 		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (SubItem<P, P>) IDENTITY);
 	}
 	
-	private static <U, T extends Comparable<? super T>, P extends Interval<T>> PartitionMap<T, U> 
+	private static <U, T extends Comparable<? super T>, P extends RegularInterval<T>> PartitionMap<T, U> 
 		ofIntervals(Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, SubItem<P, U> subFn) {
 		
 		List<P> list = toList(intervals);
@@ -73,11 +73,11 @@ public final class Partitions {
 		return new PartitionMap<>(partitions);
 	}
 
-	public static <T extends Comparable<? super T>> void intervalParts(List<? extends Interval<T>> intervals, PartConsumer<T> consumer) {
+	public static <T extends Comparable<? super T>> void intervalParts(List<? extends RegularInterval<T>> intervals, PartConsumer<T> consumer) {
 		
 		intervalParts(intervals, null, null, consumer);
 	}
-	public static <T extends Comparable<? super T>> void intervalParts(List<? extends Interval<T>> intervals, T start, T exclusifEnd, PartConsumer<T> consumer) {
+	public static <T extends Comparable<? super T>> void intervalParts(List<? extends RegularInterval<T>> intervals, T start, T exclusifEnd, PartConsumer<T> consumer) {
 		
 		Set<T> marks = new HashSet<>(intervals.size() * 2);
 		intervals.forEach(i->{
@@ -94,7 +94,7 @@ public final class Partitions {
 		for(int i=1; i<ordredMarks.size(); i++) {
 			T pre = ordredMarks.get(i-1), cur = ordredMarks.get(i);
 			consumer.accept(pre, cur, IntStream.range(0, intervals.size())
-					.filter(it-> intervals.get(it).containsInterval(pre, cur))
+					.filter(it-> intervals.get(it).intersectInterval(pre, cur))
 					.toArray(), ordredMarks.get(0));
 		}
 	}

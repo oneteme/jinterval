@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @SuppressWarnings("serial")
 @Getter
-public class OverlapIntervalException extends RuntimeException {
+public final class OverlapIntervalException extends RuntimeException {
 
 	private final Object start;
 	private final Object exclusifEnd;

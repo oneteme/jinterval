@@ -1,0 +1,22 @@
+package org.usf.learn.node;
+
+import static java.time.LocalTime.MIN;
+import static org.usf.learn.node.ZonedDateTimeIntervalNode.DEFAULT_ZONE_ID;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+public class MonthIntervalNode<M> extends CyclicIntervalNode<M, Integer> {
+	
+	public MonthIntervalNode(M model, Month start, Month exclusifEnd, List<Node<M>> childrens) {//ZoneOffset ?
+		super(model, start.getValue(), exclusifEnd.getValue(), exclusifEnd.getValue() - start.getValue(), childrens);
+	}
+	
+	@Override
+	protected ZonedDateTime combine(ZonedDateTime zdt, Integer field) {
+
+		return ZonedDateTime.of(LocalDate.of(zdt.getYear(), field, 1), MIN, DEFAULT_ZONE_ID);
+	}
+}

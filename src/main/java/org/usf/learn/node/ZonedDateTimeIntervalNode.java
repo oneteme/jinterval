@@ -1,6 +1,7 @@
 package org.usf.learn.node;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Objects.requireNonNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,8 +17,11 @@ public final class ZonedDateTimeIntervalNode<M> extends Node<M>  {
 	
 	public ZonedDateTimeIntervalNode(M model, ZonedDateTime start, ZonedDateTime exclusifEnd, List<Node<M>> childrens) {
 		super(model, childrens);
-		this.exclusifEnd = exclusifEnd;
-		this.duration = start.until(exclusifEnd, SECONDS);
+		this.exclusifEnd = requireNonNull(exclusifEnd);
+		this.duration = requireNonNull(start).until(exclusifEnd, SECONDS);
+		if(duration <= 0) {
+			throw new IllegalArgumentException("start > exclusifEnd");
+		}
 	}
 	
 	@Override
@@ -27,7 +31,7 @@ public final class ZonedDateTimeIntervalNode<M> extends Node<M>  {
 		if(v <= 0) {
 			return 0;
 		}
-		return v > duration ? duration - v : v;
+		return v > duration ? duration-v : v;
 	}
 	
 	public static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();

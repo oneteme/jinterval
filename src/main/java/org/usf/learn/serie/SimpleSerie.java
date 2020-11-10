@@ -1,8 +1,8 @@
-package org.usf.learn.core.serie;
+package org.usf.learn.serie;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
-import static org.usf.learn.core.util.Asserts.requirePositif;
+import static org.usf.learn.util.Asserts.requirePositif;
 
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;

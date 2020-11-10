@@ -1,4 +1,4 @@
-package org.usf.learn.core.partition;
+package org.usf.learn.partition;
 
 import java.util.ArrayList;
 import java.util.List;

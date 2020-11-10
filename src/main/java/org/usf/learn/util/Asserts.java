@@ -1,4 +1,4 @@
-package org.usf.learn.core.util;
+package org.usf.learn.util;
 
 import java.util.Objects;
 

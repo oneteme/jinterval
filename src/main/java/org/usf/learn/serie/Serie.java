@@ -1,7 +1,7 @@
-package org.usf.learn.core.serie;
+package org.usf.learn.serie;
 
-import static org.usf.learn.core.util.Asserts.assertEquals;
-import static org.usf.learn.core.util.Asserts.requirePositif;
+import static org.usf.learn.util.Asserts.assertEquals;
+import static org.usf.learn.util.Asserts.requirePositif;
 
 import java.time.temporal.Temporal;
 import java.util.ArrayList;

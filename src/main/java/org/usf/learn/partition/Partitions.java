@@ -1,7 +1,7 @@
-package org.usf.learn.core.partition;
+package org.usf.learn.partition;
 
-import static org.usf.learn.core.util.CollectionUtils.requiredSameField;
-import static org.usf.learn.core.util.CollectionUtils.requiredSameIntField;
+import static org.usf.learn.util.CollectionUtils.requiredSameField;
+import static org.usf.learn.util.CollectionUtils.requiredSameIntField;
 
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -18,8 +18,8 @@ import java.util.stream.IntStream;
 
 import org.usf.learn.core.RegularInterval;
 import org.usf.learn.core.HasTemporalUnit;
-import org.usf.learn.core.partition.Partition.SubItem;
-import org.usf.learn.core.serie.Serie;
+import org.usf.learn.partition.Partition.SubItem;
+import org.usf.learn.serie.Serie;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

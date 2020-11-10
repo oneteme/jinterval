@@ -1,4 +1,4 @@
-package org.usf.learn.core.util;
+package org.usf.learn.util;
 
 import static java.util.Objects.requireNonNull;
 

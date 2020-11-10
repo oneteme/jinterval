@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.usf.learn.core.serie.SimpleSerie;
+import org.usf.learn.serie.SimpleSerie;
 
 class TemporalSerieTest {
 

@@ -1,5 +1,7 @@
 package org.usf.learn.core;
 
+import java.util.Optional;
+
 public interface CyclicInterval<T extends Comparable<? super T>> extends Interval<T> {
 	
 	default boolean isInverted() {
@@ -44,5 +46,11 @@ public interface CyclicInterval<T extends Comparable<? super T>> extends Interva
 			return isInverted != pInverted || getExclusifEnd().compareTo(start)>0;
 		}
 		return false;
+	}
+	
+	@Override
+	default Optional<Interval<T>> intervalIntersection(T start, T exclusifEnd) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

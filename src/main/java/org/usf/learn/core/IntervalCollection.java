@@ -1,6 +1,6 @@
 package org.usf.learn.core;
 
-import static org.usf.learn.core.partition.Partitions.intervalParts;
+import static org.usf.learn.partition.Partitions.intervalParts;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,10 +1,5 @@
 package org.usf.learn.core;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.function.BinaryOperator.maxBy;
-import static java.util.function.BinaryOperator.minBy;
-
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -66,13 +61,13 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	}
 	
 	public static final <T extends Comparable<? super T>> IntervalCollector<T> maxInterval() {
-		Comparator<T> comparator = naturalOrder();
-		return new IntervalCollector<>(minBy(comparator), maxBy(comparator));
+
+		return new IntervalCollector<>(Intervals::min, Intervals::max);
 	}
 	
 	public static final <T extends Comparable<? super T>> IntervalCollector<T> minInterval() {
-		Comparator<T> comparator = naturalOrder();
-		return new IntervalCollector<>(maxBy(comparator), minBy(comparator));
+
+		return new IntervalCollector<>(Intervals::max, Intervals::min);
 	}
 	
 	@NoArgsConstructor

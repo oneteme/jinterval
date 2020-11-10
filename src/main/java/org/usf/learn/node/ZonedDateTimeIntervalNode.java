@@ -55,5 +55,13 @@ public final class ZonedDateTimeIntervalNode<M> extends Node<M>  {
 				exclusifEnd.atStartOfDay(DEFAULT_ZONE_ID), 
 				childrens);
 	}
-
+	public static <M> ZonedDateTimeIntervalNode<M> ofYear(M model, int start, int exclusifEnd, List<Node<M>> childrens) {
+		
+		return new ZonedDateTimeIntervalNode<>(model, 
+				LocalDate.of(start, 1, 1).atStartOfDay(DEFAULT_ZONE_ID), 
+				LocalDate.of(exclusifEnd, 1, 1).atStartOfDay(DEFAULT_ZONE_ID), 
+				childrens);
+	}
+		
+	
 }

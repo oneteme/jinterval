@@ -1,17 +1,14 @@
 package org.usf.learn.node;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Comparator.comparingInt;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class Node<M> {
@@ -84,16 +81,5 @@ public class Node<M> {
 	protected long compareTo(ZonedDateTime date) {
 		
 		return Integer.MAX_VALUE;
-	}
-	
-	@Getter
-	@RequiredArgsConstructor
-	static class ModelIntInerval<M> {
-		
-		private static final Comparator<ModelIntInerval<?>> COMPARATOR = comparingInt(ModelIntInerval::getStart);
-		
-		private final int start;
-		private final int exclusifEnd;
-		private final M model;
 	}
 }

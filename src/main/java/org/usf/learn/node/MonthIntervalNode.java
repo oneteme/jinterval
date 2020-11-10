@@ -8,10 +8,10 @@ import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class MonthIntervalNode<M> extends CyclicIntervalNode<M, Integer> {
+public final class MonthIntervalNode<M> extends CyclicIntervalNode<M, Integer> {
 	
 	public MonthIntervalNode(M model, Month start, Month exclusifEnd, List<Node<M>> childrens) {//ZoneOffset ?
-		super(model, start.getValue(), exclusifEnd.getValue(), exclusifEnd.getValue() - start.getValue(), childrens);
+		super(model, start.getValue(), exclusifEnd.getValue(), (s, e)-> e-s, childrens);
 	}
 	
 	@Override

@@ -10,14 +10,13 @@ import java.util.List;
 public final class TimeIntervalNode<M> extends CyclicIntervalNode<M, LocalTime> {
 	
 	public TimeIntervalNode(M model, LocalTime start, LocalTime exclusifEnd, List<Node<M>> childrens) {//ZoneOffset ?
-		super(model, start, exclusifEnd, start.until(exclusifEnd, SECONDS), childrens);
+		super(model, start, exclusifEnd, (s, e)-> s.until(e, SECONDS), childrens);
 	}
 	
 	@Override
 	protected ZonedDateTime combine(ZonedDateTime zdt, LocalTime field) {
 
-		return zdt
-				.toLocalDate()
+		return zdt.toLocalDate()
 				.atTime(field)
 				.atZone(DEFAULT_ZONE_ID);
 	}

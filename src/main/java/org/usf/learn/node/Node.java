@@ -1,9 +1,14 @@
 package org.usf.learn.node;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static org.usf.learn.node.ModelPartition.PARTITON_COMPARATOR;
+import static org.usf.learn.node.ModelPartition.assign;
+import static org.usf.learn.util.CollectionUtils.notNullOrEmpty;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,49 +19,61 @@ import lombok.Getter;
 public class Node<M> {
 	
 	private final M model;
-	private final List<Node<M>> childrens;
+	private final List<? extends Node<M>> childrens;
 	
-	public Node(M model, List<Node<M>> childrens) {
+	public Node(M model, List<? extends Node<M>> childrens) {
 		this.model = model; //nullable
-		this.childrens = childrens == null ? Collections.emptyList() : childrens;
+		this.childrens = notNullOrEmpty(childrens);
 	}
 	
-	public List<ModelIntInerval<M>> apply(ZonedDateTime start, ZonedDateTime exclusifEnd, int step) {
+	public final List<ModelPartition<M>> partitions(ZonedDateTime start, ZonedDateTime exclusifEnd, int step) {
 
-		return until(start, 0, (int)(start.until(exclusifEnd, SECONDS)/step), step);
+		return partitions(start, exclusifEnd, step, emptyList());
 	}
 	
-	protected List<ModelIntInerval<M>> until(ZonedDateTime date, int index, int max, int step) {
+	public final List<ModelPartition<M>> partitions(ZonedDateTime start, ZonedDateTime exclusifEnd, int step, Collection<? extends RegularIntervalNode<M>> primaryNodes) {
+		int limit = (int)(requireNonNull(start).until(requireNonNull(exclusifEnd), SECONDS)/step);
+		if(limit <= 0) {
+			throw new IllegalArgumentException("start >= end");
+		}
+		List<ModelPartition<M>> primaryPartitions = requireNonNull(primaryNodes).stream()
+				.flatMap(n-> n.until(start, 0, limit, step).stream()) //fix limit
+				.collect(Collectors.toList());
+		List<ModelPartition<M>> partitions = until(start, 0, limit, step); //parallel
+		return primaryPartitions.isEmpty() ? partitions : assign(partitions, primaryPartitions);
+	}
+	
+	protected List<ModelPartition<M>> until(ZonedDateTime date, int index, int max, int step) {
 		
-		List<ModelIntInerval<M>> list = new LinkedList<>();
+		List<ModelPartition<M>> list = new LinkedList<>();
 		long diff = compareTo(date);
 		while(diff != 0) {
 			int loops = (int) (diff / step);
 			if(diff > 0) {
 				loops = Math.min(loops, max);
-				ModelIntInerval<ZonedDateTime> context = new ModelIntInerval<>(index, loops, date); //final reference
-				List<ModelIntInerval<M>> childList = childrens.parallelStream() //parallel ?
-						.flatMap(n-> n.until(context.model, context.start, context.exclusifEnd, step).stream())
+				ModelPartition<ZonedDateTime> context = new ModelPartition<>(index, loops, date); //final reference
+				List<ModelPartition<M>> childList = childrens.parallelStream() //parallel ?
+						.flatMap(n-> n.until(context.getModel(), context.getStart(), context.getExclusifEnd(), step).stream())
 						.sequential()
-						.sorted(ModelIntInerval.COMPARATOR)
+						.sorted(PARTITON_COMPARATOR)
 						.collect(Collectors.toList());
 				if(model != null) {
 					if(childList.isEmpty()) {
-						list.add(new ModelIntInerval<>(context.start, context.exclusifEnd, model));
+						list.add(new ModelPartition<>(context.getStart(), context.getExclusifEnd(), model));
 					}
 					else {
-						if(context.start < childList.get(0).getStart()) {
-							list.add(new ModelIntInerval<>(context.start, childList.get(0).getStart(), model));
+						if(context.getStart() < childList.get(0).getStart()) {
+							list.add(new ModelPartition<>(context.getStart(), childList.get(0).getStart(), model));
 						}
 						list.add(childList.get(0));
 						for(int i=1; i<childList.size(); i++) {
 							if(childList.get(i-1).getExclusifEnd() < childList.get(i).getStart()) {
-								list.add(new ModelIntInerval<>(childList.get(i-1).getExclusifEnd(), childList.get(i).getStart(), model));
+								list.add(new ModelPartition<>(childList.get(i-1).getExclusifEnd(), childList.get(i).getStart(), model));
 							}
 							list.add(childList.get(i));
 						}
-						if(childList.get(childList.size()-1).getExclusifEnd() < context.exclusifEnd) {
-							list.add(new ModelIntInerval<>(childList.get(childList.size()-1).getExclusifEnd(), context.exclusifEnd, model));
+						if(childList.get(childList.size()-1).getExclusifEnd() < context.getExclusifEnd()) {
+							list.add(new ModelPartition<>(childList.get(childList.size()-1).getExclusifEnd(), context.getExclusifEnd(), model));
 						}
 					}
 				}
@@ -77,7 +94,7 @@ public class Node<M> {
 		}
 		return list;
 	}
-	
+		
 	protected long compareTo(ZonedDateTime date) {
 		
 		return Integer.MAX_VALUE;

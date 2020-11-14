@@ -1,5 +1,7 @@
 package org.usf.learn.core;
 
+import static java.util.Collections.emptySet;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -57,7 +59,7 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	@Override
 	public Set<Characteristics> characteristics() {
 
-		return Set.of(Characteristics.IDENTITY_FINISH);
+		return emptySet();
 	}
 	
 	public static final <T extends Comparable<? super T>> IntervalCollector<T> maxInterval() {

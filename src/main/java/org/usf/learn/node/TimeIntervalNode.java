@@ -1,7 +1,7 @@
 package org.usf.learn.node;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.usf.learn.node.ZonedDateTimeIntervalNode.DEFAULT_ZONE_ID;
+import static org.usf.learn.node.RegularIntervalNode.DEFAULT_ZONE_ID;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;

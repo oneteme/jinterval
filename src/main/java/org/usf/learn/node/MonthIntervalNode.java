@@ -1,7 +1,7 @@
 package org.usf.learn.node;
 
 import static java.time.LocalTime.MIN;
-import static org.usf.learn.node.ZonedDateTimeIntervalNode.DEFAULT_ZONE_ID;
+import static org.usf.learn.node.RegularIntervalNode.DEFAULT_ZONE_ID;
 
 import java.time.LocalDate;
 import java.time.Month;

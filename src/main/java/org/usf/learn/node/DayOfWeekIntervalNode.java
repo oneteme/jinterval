@@ -1,6 +1,6 @@
 package org.usf.learn.node;
 
-import static org.usf.learn.node.ZonedDateTimeIntervalNode.DEFAULT_ZONE_ID;
+import static org.usf.learn.node.RegularIntervalNode.DEFAULT_ZONE_ID;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;

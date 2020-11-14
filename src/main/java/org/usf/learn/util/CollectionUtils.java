@@ -1,5 +1,6 @@
 package org.usf.learn.util;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
@@ -37,4 +38,7 @@ public final class CollectionUtils {
 		return c;
 	}
 
+	public static <T> List<T> notNullOrEmpty(List<T> list){
+		return list == null ? emptyList() : list;
+	}
 }

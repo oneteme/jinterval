@@ -1,4 +1,4 @@
-package org.usf.Learn.core;
+package org.usf.learn.core;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -6,7 +6,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.usf.Learn.core.Utils.assertException;
+import static org.usf.learn.core.Utils.assertException;
 
 import java.util.ArrayList;
 import java.util.Comparator;

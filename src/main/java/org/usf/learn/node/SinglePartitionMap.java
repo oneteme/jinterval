@@ -14,12 +14,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public final class SinglePartitionMap<M> {
+final class SinglePartitionMap<M> {
 	
 	private final Instant start;
 	private final Instant exclusifEnd;

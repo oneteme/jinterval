@@ -1,4 +1,4 @@
-package org.usf.Learn.core;
+package org.usf.learn.core;
 
 import java.time.Instant;
 import java.time.LocalDate;

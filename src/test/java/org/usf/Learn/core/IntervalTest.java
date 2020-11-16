@@ -1,4 +1,4 @@
-package org.usf.Learn.core;
+package org.usf.learn.core;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

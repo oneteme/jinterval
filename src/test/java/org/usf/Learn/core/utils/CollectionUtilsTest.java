@@ -1,4 +1,4 @@
-package org.usf.Learn.core.utils;
+package org.usf.learn.core.utils;
 
 public class CollectionUtilsTest {
 

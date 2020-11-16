@@ -7,9 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+@EqualsAndHashCode
 @Setter
 @Getter
 @AllArgsConstructor
@@ -20,6 +22,12 @@ final class SinglePartition<M> {
 	int start;
 	int exclusifEnd;
 	final M model;
+	
+
+	@Override
+	public String toString() {
+		return model + " : [" + start + " - " + exclusifEnd + "]";
+	}
 	
 	static final <M> List<SinglePartition<M>> assign(List<SinglePartition<M>> l1, List<SinglePartition<M>> l2) {
 		

@@ -1,4 +1,4 @@
-package org.usf.Learn.core;
+package org.usf.learn.core;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -7,7 +7,7 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.usf.Learn.core.Utils.assertException;
+import static org.usf.learn.core.Utils.assertException;
 
 import java.time.Instant;
 import java.time.LocalDate;

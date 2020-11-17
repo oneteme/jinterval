@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class SinglePartitionTest {
 	
-	@ParameterizedTest(name = "assing({0}, {1})")
+	@ParameterizedTest(name = "{0} <= {1})")
 	@MethodSource("caseFactory")
 	void test(List<SinglePartition<String>> l1, List<SinglePartition<String>> l2, List<SinglePartition<String>> expected) {
 		
@@ -64,5 +64,4 @@ class SinglePartitionTest {
 		
 		return new SinglePartition<>(start, exclusifEnd, model);
 	}
-	
 }

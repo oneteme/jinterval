@@ -6,9 +6,12 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.usf.jinterval.Utils.assertException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,12 +21,59 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.usf.jinterval.Utils;
-import org.usf.jinterval.core.IntervalCollection;
-import org.usf.jinterval.core.RegularInterval;
 import org.usf.jinterval.core.exception.MissingIntervalException;
 import org.usf.jinterval.core.exception.OverlapIntervalException;
 
 class IntervalCollectionTest {
+
+	@ParameterizedTest(name="{0}")
+	@MethodSource("caseFactory")
+	<T extends Comparable<? super T>> void testMaxInterval(IntervalImpl<T> interval) {
+
+		testMaxInterval(Collections.emptyList(), null);
+		testMaxInterval(Arrays.asList(interval), interval);
+		testMaxInterval(Arrays.asList(interval, interval.shiftExclusifEnd(3, 5), interval.shiftStart(-5, -3)), interval.shift(-5, 5));
+		testMaxInterval(Arrays.asList(interval, interval.shiftExclusifEnd(0, 3), interval.shiftStart(-3, 0)), interval.shift(-3, 3));
+		testMaxInterval(Arrays.asList(interval, interval.shift(1, 2), interval.shift(-5, -2)), interval.shift(-5, 2));
+		testMaxInterval(Arrays.asList(interval, interval.shiftStart(0, 3), interval.shiftStart(-5, 2)), interval.shift(-5, 0));
+		testMaxInterval(Arrays.asList(interval, interval.shiftExclusifEnd(-3, 3), interval.shiftExclusifEnd(-2, 5)), interval.shift(0, 5));
+	}
+
+	@ParameterizedTest(name="{0}")
+	@MethodSource("caseFactory")
+	<T extends Comparable<? super T>> void testMinInterval(IntervalImpl<T> interval) {
+
+		testMinInterval(Collections.emptyList(), null);
+		testMinInterval(Arrays.asList(interval), interval);
+		testMinInterval(Arrays.asList(interval, interval.shiftExclusifEnd(3, 5), interval.shiftStart(-5, -3)), null);
+		testMinInterval(Arrays.asList(interval, interval.shiftExclusifEnd(0, 3), interval.shiftStart(-3, 0)), null);
+//		testMinInterval(Arrays.asList(interval, interval.shift(1, 2), interval.shift(-5, -2)), null);
+		testMinInterval(Arrays.asList(interval, interval.shiftStart(0, 3), interval.shiftStart(-5, 2)), interval.shiftStart(0, 2));
+		testMinInterval(Arrays.asList(interval, interval.shiftExclusifEnd(-3, 3), interval.shiftExclusifEnd(-2, 5)), interval.shiftExclusifEnd(-2, 0));
+		
+	}
+
+	<T extends Comparable<? super T>> void testMinInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
+			
+		var res = new IntervalCollection<>(intervals).minInterval();
+		if(expexted == null) {
+			assertTrue(res.isEmpty());
+		}
+		else {
+			assertEquals(expexted, new ImmutableInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+		}
+	}
+	
+	<T extends Comparable<? super T>> void testMaxInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
+			
+		var res = new IntervalCollection<>(intervals).maxInterval();
+		if(expexted == null) {
+			assertTrue(res.isEmpty());
+		}
+		else {
+			assertEquals(expexted, new ImmutableInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+		}
+	}
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")

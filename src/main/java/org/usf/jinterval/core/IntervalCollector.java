@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntervalCollector<T extends Comparable<? super T>> implements Collector<Interval<T>, SimpleInterval<T>, Optional<Interval<T>>>{
@@ -77,7 +76,6 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
-	@Setter(value = AccessLevel.PACKAGE)
 	static final class SimpleInterval<T extends Comparable<? super T>> implements RegularInterval<T> {
 	
 		private T start;

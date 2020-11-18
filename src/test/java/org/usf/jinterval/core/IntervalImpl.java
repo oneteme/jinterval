@@ -2,8 +2,6 @@ package org.usf.jinterval.core;
 
 import java.util.function.BiFunction;
 
-import org.usf.jinterval.core.ImmutableInterval;
-
 import lombok.Getter;
 
 @Getter

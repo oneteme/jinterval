@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IntervalCollector<T extends Comparable<? super T>> implements Collector<Interval<T>, SimpleInterval<T>, Optional<Interval<T>>>{
+public final class IntervalCollector<T extends Comparable<? super T>> implements Collector<Interval<T>, SimpleInterval<T>, Optional<RegularInterval<T>>>{
 	
 	private final BinaryOperator<T> startOp;
 	private final BinaryOperator<T> exclusifEndOp;
@@ -50,7 +50,7 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	}
 
 	@Override
-	public Function<SimpleInterval<T>, Optional<Interval<T>>> finisher() {
+	public Function<SimpleInterval<T>, Optional<RegularInterval<T>>> finisher() {
 
 		return a-> a.start == null || a.start.compareTo(a.exclusifEnd) >= 0 
 				? Optional.empty() 

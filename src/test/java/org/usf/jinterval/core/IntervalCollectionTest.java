@@ -55,7 +55,7 @@ class IntervalCollectionTest {
 
 	<T extends Comparable<? super T>> void testMinInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
 			
-		var res = new IntervalCollection<>(intervals).minInterval();
+		var res = new IntervalIterable<>(intervals).minInterval();
 		if(expexted == null) {
 			assertTrue(res.isEmpty());
 		}
@@ -66,7 +66,7 @@ class IntervalCollectionTest {
 	
 	<T extends Comparable<? super T>> void testMaxInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
 			
-		var res = new IntervalCollection<>(intervals).maxInterval();
+		var res = new IntervalIterable<>(intervals).maxInterval();
 		if(expexted == null) {
 			assertTrue(res.isEmpty());
 		}
@@ -166,7 +166,7 @@ class IntervalCollectionTest {
 	
 	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
 		
-		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
+		IntervalIterable<T> ic = new IntervalIterable<>(intervals);
 		T min = intervals.stream().map(RegularInterval::getStart).min(Comparator.naturalOrder()).orElse(null);
 		T max = intervals.stream().map(RegularInterval::getExclusifEnd).max(Comparator.naturalOrder()).orElse(null);
 		
@@ -204,7 +204,7 @@ class IntervalCollectionTest {
 	
 	private <T extends Comparable<? super T>> void testOverlapInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
 		
-		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
+		IntervalIterable<T> ic = new IntervalIterable<>(intervals);
 		
 		assertEquals(!expectedIntervals.isEmpty(), ic.isOverlapIntervals());
 		assertArrayEquals(expectedIntervals.toArray(), ic.overlapIntervals().toArray());
@@ -222,7 +222,7 @@ class IntervalCollectionTest {
 			
 			String exMessage, Class<? extends RuntimeException> clazz, IntervalImpl<T> origin) {
 		
-		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
+		IntervalIterable<T> ic = new IntervalIterable<>(intervals);
 		
 		assertEquals(exMessage == null, ic.isLinkedIntervals());
 		assertArrayEquals(expectedIntervals.toArray(), ic.dirtyIntervals().toArray());

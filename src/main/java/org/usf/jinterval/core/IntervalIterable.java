@@ -16,7 +16,7 @@ import org.usf.jinterval.core.exception.OverlapIntervalException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class IntervalCollection<T extends Comparable<? super T>> {
+public final class IntervalIterable<T extends Comparable<? super T>> {
 	
 	private static final IntPredicate MISSING_INTERVALS_FILTER = i-> i == 0;
 	private static final IntPredicate OVERLAP_INTERVALS_FILTER = i-> i > 1;
@@ -24,11 +24,11 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	private final List<? extends RegularInterval<T>> intervals;
 	
-	public Optional<Interval<T>> minInterval() {
+	public Optional<RegularInterval<T>> minInterval() {
 		return intervals.stream().collect(IntervalCollector.minInterval());
 	}
 
-	public Optional<Interval<T>> maxInterval() {
+	public Optional<RegularInterval<T>> maxInterval() {
 		return intervals.stream().collect(IntervalCollector.maxInterval());
 	}
 	

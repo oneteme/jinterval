@@ -7,7 +7,7 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.usf.jinterval.Utils.assertException;
+import static org.usf.jinterval.Utils.assertExceptionMsg;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,19 +29,19 @@ class SerieTest {
 	@ParameterizedTest(name="t={0} with step={2} {1}")
 	@MethodSource("caseFactory")
 	<T extends Temporal & Comparable<? super T>> void testConstructor(T t, ChronoUnit unit, int step) {
-		assertException(NullPointerException.class, () -> {
+		assertExceptionMsg(NullPointerException.class, () -> {
 	      new SimpleSerie<>(null, (short)0, null, null);
 	    }, null);
-	    assertException(RuntimeException.class, () -> {
+	    assertExceptionMsg(RuntimeException.class, () -> {
 	      new SimpleSerie<>(t, (short)-1, null, null);
 	    }, "Positif value required");
-	    assertException(RuntimeException.class, () -> {
+	    assertExceptionMsg(RuntimeException.class, () -> {
 	      new SimpleSerie<>(t, (short)0, null, null);
 	    }, "Positif value required");
-	    assertException(NullPointerException.class, () -> {
+	    assertExceptionMsg(NullPointerException.class, () -> {
 	      new SimpleSerie<>(t, step, null, null);
 	    }, null);
-	    assertException(NullPointerException.class, () -> {
+	    assertExceptionMsg(NullPointerException.class, () -> {
 	      new SimpleSerie<>(t, step, unit, null);
 	    }, null);
 	    new SimpleSerie<>(t, step, unit, Arrays.asList(1,2,3));
@@ -101,16 +101,16 @@ class SerieTest {
 		var s11 = new SimpleSerie<>(t, step, ChronoUnit.values()[unit.ordinal()+1], Arrays.asList());
 		var s12 = new SimpleSerie<>(t, step+1, unit, Arrays.asList());
 		var s13 = new SimpleSerie<>((T)t.plus(3*step, unit), step, unit, Arrays.asList());
-		assertException(IllegalArgumentException.class, ()-> s10.apply(s11, (v1,v2)-> null), "not equals");
-		assertException(IllegalArgumentException.class, ()-> s10.apply(s12, (v1,v2)-> null), "not equals");
-		assertException(IllegalArgumentException.class, ()-> s10.apply(s13, (v1,v2)-> null), "Unconnected series");
-		assertException(IllegalArgumentException.class, ()-> s13.apply(s10, (v1,v2)-> null), "Unconnected series");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s10.apply(s11, (v1,v2)-> null), "not equals");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s10.apply(s12, (v1,v2)-> null), "not equals");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s10.apply(s13, (v1,v2)-> null), "Unconnected series");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s13.apply(s10, (v1,v2)-> null), "Unconnected series");
 		
 		step = step % 2 == 0 ? step : step * 2;
 		var s14 = new SimpleSerie<>((T)t.minus(step/2, unit), step, unit, Arrays.asList("DAY_", "DAY_", "DAY_", "DAY_", "DAY_"));
 		var s15 = new SimpleSerie<>(t, step, unit, Arrays.asList(1,2,3,4,5));
-		assertException(IllegalArgumentException.class, ()-> s14.apply(s15, (v1,v2)-> null), "distinct series");
-		assertException(IllegalArgumentException.class, ()-> s15.apply(s14, (v1,v2)-> null), "distinct series");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s14.apply(s15, (v1,v2)-> null), "distinct series");
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s15.apply(s14, (v1,v2)-> null), "distinct series");
 	}
 	
 	void assertSerie(SimpleSerie<?,?> serie, Temporal t, int step, ChronoUnit unit, Collection<Object> collection) {

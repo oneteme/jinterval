@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 import org.usf.jinterval.core.HasTemporalUnit;
 import org.usf.jinterval.core.RegularInterval;
 import org.usf.jinterval.core.Serie;
-import org.usf.jinterval.partition.MultiModelPart.SubItem;
+import org.usf.jinterval.partition.MultiModelPart.ObjIntFunction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Partitions {
 	
-	private static final SubItem<Object, Object> IDENTITY = (o, i)-> o;
+	private static final ObjIntFunction<Object, Object> IDENTITY = (o, i)-> o;
 	
 	public static <P, T extends Temporal & Comparable<? super T>, S extends Serie<T, ? extends P>> MultiModelPartition<T, P> ofSeries(List<S> series) {
 
@@ -39,13 +39,13 @@ public final class Partitions {
 		return ofPeriods(series, requiredSameIntField(series, Serie::getStep), Serie::getPoint, start, exclusifEnd);
 	}
 	
-	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> MultiModelPartition<T, U> ofPeriods(List<P> periods, int step, SubItem<P, U> fn) {
+	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> MultiModelPartition<T, U> ofPeriods(List<P> periods, int step, ObjIntFunction<P, U> fn) {
 		
 		return ofPeriods(periods, step, fn, null, null);
 	}
 	
 	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> MultiModelPartition<T, U> 
-		ofPeriods(List<P> periods, int step, SubItem<P, U> fn, T start, T exclusifEnd) {
+		ofPeriods(List<P> periods, int step, ObjIntFunction<P, U> fn, T start, T exclusifEnd) {
 		
 		ChronoUnit unit = requiredSameField(periods, HasTemporalUnit::getTemporalUnit);
 		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> until(min, sp, unit, step), fn);
@@ -60,11 +60,11 @@ public final class Partitions {
 	public static <T extends Temporal & Comparable<? super T>, P extends RegularInterval<T>> MultiModelPartition<T, P> ofIntervals(Collection<P> periods, T start, T exclusifEnd) {
 		
 		AtomicInteger cp = new AtomicInteger();
-		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (SubItem<P, P>) IDENTITY);
+		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (ObjIntFunction<P, P>) IDENTITY);
 	}
 	
 	private static <U, T extends Comparable<? super T>, P extends RegularInterval<T>> MultiModelPartition<T, U> 
-		ofIntervals(Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, SubItem<P, U> subFn) {
+		ofIntervals(Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, ObjIntFunction<P, U> subFn) {
 		
 		List<P> list = toList(intervals);
 		List<MultiModelPart<T,?,U>> partitions = new LinkedList<>();

@@ -22,7 +22,7 @@ public final class MultiModelPart<I, T, U> {
 	private final int exclusifEndIndex;
 	@Getter private final I start;
 	@Getter private final I exclusifEnd;
-	private final SubItem<T, U> subList;
+	private final ObjIntFunction<T, U> subList;
 
 	public List<U> apply(BinaryOperator<U> op) {
 		return apply(op, ArrayList::new);
@@ -52,7 +52,7 @@ public final class MultiModelPart<I, T, U> {
 		accept(0, (o, i)-> identity, fn, consumer);
 	}
 
-	private <R> void accept(int first, SubItem<T, R> identity, BiFunction<R, U, R> fn, Consumer<R> consumer) {
+	private <R> void accept(int first, ObjIntFunction<T, R> identity, BiFunction<R, U, R> fn, Consumer<R> consumer) {
 		if(first < indexs.length) {
 			for(int i=startIndex; i<exclusifEndIndex; i++) {
 				R res = identity.get(data.get(indexs[0]), i);
@@ -80,7 +80,7 @@ public final class MultiModelPart<I, T, U> {
 	}
 
 	@FunctionalInterface
-	public interface SubItem<T, U> {
+	public interface ObjIntFunction<T, U> {
 		
 		U get(T obj, int index);
 	}

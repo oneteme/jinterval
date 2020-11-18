@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.usf.jinterval.Utils.assertException;
+import static org.usf.jinterval.Utils.assertExceptionMsg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,8 +183,8 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(min, max, origin::create, Collectors.toList()).toArray());
 		
 		if(!expectedIntervals.isEmpty()) {
-			Utils.assertException(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(), "missing interval");
-			Utils.assertException(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(min, max), "missing interval");
+			Utils.assertExceptionMsg(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(), "missing interval");
+			Utils.assertExceptionMsg(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(min, max), "missing interval");
 		}
 		else {
 			assertDoesNotThrow(()-> ic.requiredNotMissingIntervals());
@@ -198,7 +198,7 @@ class IntervalCollectionTest {
 			assertEquals(true, ic.isMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()));
 			assertArrayEquals(expectedIntervals.toArray(), ic.missingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()).toArray());
 			assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd(), origin::create, Collectors.toList()).toArray());
-			assertException(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()), "missing interval");
+			assertExceptionMsg(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()), "missing interval");
 		}
 	}
 	
@@ -211,7 +211,7 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.collectOverlapIntervals(origin::create, Collectors.toList()).toArray());
 
 		if(!expectedIntervals.isEmpty()) {
-			assertException(OverlapIntervalException.class, ()-> ic.requiredNotOverlapIntervals(), "overlap interval");
+			assertExceptionMsg(OverlapIntervalException.class, ()-> ic.requiredNotOverlapIntervals(), "overlap interval");
 		}
 		else {
 			assertDoesNotThrow(()-> ic.requiredNotOverlapIntervals());
@@ -229,7 +229,7 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.collectDirtyIntervals(origin::create, Collectors.toList()).toArray());
 		
 		if(exMessage != null) {
-			assertException(clazz, ()-> ic.requiredLinkedIntervals(), exMessage);
+			assertExceptionMsg(clazz, ()-> ic.requiredLinkedIntervals(), exMessage);
 		}
 		else {
 			assertDoesNotThrow(()-> ic.requiredLinkedIntervals());

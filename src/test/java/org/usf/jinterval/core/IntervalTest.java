@@ -1,5 +1,6 @@
 package org.usf.jinterval.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -80,6 +81,13 @@ class IntervalTest {
 
 		assertFalse(interval.intersectInterval(interval.shiftStart(0, 0))); //??
 		assertFalse(interval.intersectInterval(interval.shiftExclusifEnd(0, 0))); //??
+	}
+
+	@ParameterizedTest(name="{0}")
+	@MethodSource("caseFactory")
+	<T extends Comparable<? super T>> void testToString(IntervalImpl<T> interval) {//increase test cov
+		
+		assertEquals("[" + interval.getStart() + ", " + interval.getExclusifEnd() + "[", interval.toString());
 	}
 
 	static Stream<Arguments> caseFactory() {

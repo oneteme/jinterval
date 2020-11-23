@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.usf.jinterval.core.HasTemporalUnit;
+import org.usf.jinterval.core.Interval;
 import org.usf.jinterval.core.RegularInterval;
 import org.usf.jinterval.core.Serie;
 import org.usf.jinterval.partition.MultiModelPart.ObjIntFunction;
@@ -48,36 +49,36 @@ public final class Partitions {
 		ofPeriods(List<P> periods, int step, ObjIntFunction<P, U> fn, T start, T exclusifEnd) {
 		
 		ChronoUnit unit = requiredSameField(periods, HasTemporalUnit::getTemporalUnit);
-		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> until(min, sp, unit, step), fn);
+		return ofIntervals(false, periods, start, exclusifEnd, (min, sp)-> until(min, sp, unit, step), fn);
 	}
 	
 
-	public static <T extends Temporal & Comparable<? super T>, P extends RegularInterval<T>> MultiModelPartition<T, P> ofIntervals(Collection<P> periods) {
-		return ofIntervals(periods, null, null);
+	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, P> ofIntervals(boolean cyclic, Collection<P> periods) {
+		return ofIntervals(cyclic, periods, null, null);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends Temporal & Comparable<? super T>, P extends RegularInterval<T>> MultiModelPartition<T, P> ofIntervals(Collection<P> periods, T start, T exclusifEnd) {
+	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, P> ofIntervals(boolean cyclic, Collection<P> periods, T start, T exclusifEnd) {
 		
 		AtomicInteger cp = new AtomicInteger();
-		return ofIntervals(periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (ObjIntFunction<P, P>) IDENTITY);
+		return ofIntervals(cyclic, periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (ObjIntFunction<P, P>) IDENTITY);
 	}
 	
-	private static <U, T extends Comparable<? super T>, P extends RegularInterval<T>> MultiModelPartition<T, U> 
-		ofIntervals(Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, ObjIntFunction<P, U> subFn) {
+	private static <U, T extends Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, U> 
+		ofIntervals(boolean cyclic, Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, ObjIntFunction<P, U> subFn) {
 		
 		List<P> list = toList(intervals);
 		List<MultiModelPart<T,?,U>> partitions = new LinkedList<>();
-		intervalParts(list, start, exclusifEnd, (sp, ep, indexs, min)-> 
-			partitions.add(new MultiModelPart<>(list, indexs, indexFn.applyAsInt(min, sp), indexFn.applyAsInt(min, ep), start, exclusifEnd, subFn)));
+		intervalParts(cyclic, list, start, exclusifEnd, (sp, ep, indexs, min)-> 
+			partitions.add(new MultiModelPart<>(list, indexs, indexFn.applyAsInt(min, sp), indexFn.applyAsInt(min, ep), sp, ep, subFn)));
 		return new MultiModelPartition<>(partitions);
 	}
 
-	public static <T extends Comparable<? super T>> void intervalParts(List<? extends RegularInterval<T>> intervals, PartConsumer<T> consumer) {
+	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(boolean cyclic, List<I> intervals, PartConsumer<T> consumer) {
 		
-		intervalParts(intervals, null, null, consumer);
+		intervalParts(cyclic, intervals, null, null, consumer);
 	}
-	public static <T extends Comparable<? super T>> void intervalParts(List<? extends RegularInterval<T>> intervals, T start, T exclusifEnd, PartConsumer<T> consumer) {
+	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(boolean cyclic, List<I> intervals, T start, T exclusifEnd, PartConsumer<T> consumer) {
 		
 		Set<T> marks = new HashSet<>(intervals.size() * 2);
 		intervals.forEach(i->{
@@ -91,6 +92,9 @@ public final class Partitions {
 			marks.add(exclusifEnd);
 		}
 		List<T> ordredMarks = marks.stream().sorted().collect(Collectors.toList());
+		if(cyclic) {
+			ordredMarks.add(ordredMarks.get(0));
+		}
 		for(int i=1; i<ordredMarks.size(); i++) {
 			T pre = ordredMarks.get(i-1), cur = ordredMarks.get(i);
 			consumer.accept(pre, cur, IntStream.range(0, intervals.size())
@@ -98,6 +102,7 @@ public final class Partitions {
 					.toArray(), ordredMarks.get(0));
 		}
 	}
+	
 	
 	private static final <T> List<T> toList(Collection<T> c){
 		return c instanceof List ? (List<T>) c : new ArrayList<>(c);

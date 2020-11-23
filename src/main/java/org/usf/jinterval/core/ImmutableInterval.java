@@ -14,7 +14,7 @@ public class ImmutableInterval<T extends Comparable<? super T>> implements Regul
 	
 	@Override
 	public String toString() {
-		return "[" + start + " - " + exclusifEnd  + "[";
+		return Intervals.toString(this);
 	}
 
 }

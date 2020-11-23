@@ -16,36 +16,33 @@ public interface CyclicInterval<T extends Comparable<? super T>> extends Interva
 
 	@Override
 	default boolean containsInterval(T start, T exclusifEnd) {
-		int diff = start.compareTo(exclusifEnd);
+		int diff = getExclusifEnd().compareTo(getStart());
 		if(diff == 0) {
 			return true;
 		}
-		boolean pInverted = start.compareTo(exclusifEnd) >= 0;
-		boolean isInverted = diff > 0;
-		if(!isInverted && pInverted) {
+		int pDiff = exclusifEnd.compareTo(start);
+		if(pDiff == 0 || pDiff < 0 && diff > 0) {
 			return false;
 		}
-		if(getStart().compareTo(start)<=0) {
-			return isInverted != pInverted || getExclusifEnd().compareTo(exclusifEnd)>=0;
-		}
-		return false;
+		return diff != pDiff 
+				? getStart().compareTo(start)>=0 || getExclusifEnd().compareTo(exclusifEnd)<=0
+				:!(getStart().compareTo(start)>0 || getExclusifEnd().compareTo(exclusifEnd)<0);
+				
 	}
 
 	@Override
 	default boolean intersectInterval(T start, T exclusifEnd) {
-		int diff = start.compareTo(exclusifEnd);
+		int diff = getExclusifEnd().compareTo(getStart());
 		if(diff == 0) {
 			return true;
 		}
-		boolean pInverted = start.compareTo(exclusifEnd) >= 0;
-		boolean isInverted = diff > 0;
-		if(isInverted && pInverted) {
+		int pDiff = exclusifEnd.compareTo(start);
+		if(pDiff == 0 || pDiff < 0 && diff < 0) {
 			return true;
 		}
-		if(getStart().compareTo(exclusifEnd)<0) {
-			return isInverted != pInverted || getExclusifEnd().compareTo(start)>0;
-		}
-		return false;
+		return !(diff == pDiff
+				? getStart().compareTo(exclusifEnd)>=0 || getExclusifEnd().compareTo(start)<=0
+				: getStart().compareTo(exclusifEnd)>=0 && getExclusifEnd().compareTo(start)<=0);
 	}
 	
 	@Override

@@ -16,7 +16,7 @@ import org.usf.jinterval.core.exception.OverlapIntervalException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class IntervalIterable<T extends Comparable<? super T>> {
+public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	private static final IntPredicate MISSING_INTERVALS_FILTER = i-> i == 0;
 	private static final IntPredicate OVERLAP_INTERVALS_FILTER = i-> i > 1;
@@ -117,7 +117,7 @@ public final class IntervalIterable<T extends Comparable<? super T>> {
 	
 	public void acceptIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate, BiConsumer<T,T> consumer) {
 
-		intervalParts(intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
+		intervalParts(false, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
 			if(nIntervalPredicate.test(indexs.length)) {
 				consumer.accept(sp, ep);
 			}
@@ -136,7 +136,7 @@ public final class IntervalIterable<T extends Comparable<? super T>> {
 	
 	private void throwsIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate) {
 
-		intervalParts(intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
+		intervalParts(false, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
 			if(nIntervalPredicate.test(indexs.length)) {
 				throw indexs.length == 0 
 						? new MissingIntervalException(sp, ep) 

@@ -5,6 +5,9 @@ import static org.usf.jinterval.core.Intervals.min;
 
 import java.util.Optional;
 
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+
 public interface RegularInterval<T extends Comparable<? super T>> extends Interval<T> {
 
 	@Override
@@ -20,7 +23,7 @@ public interface RegularInterval<T extends Comparable<? super T>> extends Interv
 	}
 
 	@Override
-	default boolean intersectInterval(T start, T exclusifEnd){
+	default boolean  intersectInterval(T start, T exclusifEnd){
 		return getStart().compareTo(exclusifEnd) < 0
 			&& getExclusifEnd().compareTo(start) > 0;
 	}
@@ -31,6 +34,7 @@ public interface RegularInterval<T extends Comparable<? super T>> extends Interv
 		T e = min(getExclusifEnd(), exclusifEnd);
 		return s.compareTo(e)>=0 
 				? Optional.empty() 
-				: Optional.of(new ImmutableInterval<>(s, e)) ;
+				: Optional.of(new ImmutableRegularInterval<>(s, e)) ;
 	}
+	
 }

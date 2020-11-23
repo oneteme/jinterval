@@ -28,7 +28,7 @@ class IntervalCollectionTest {
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMaxInterval(IntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMaxInterval(RegularIntervalImpl<T> interval) {
 
 		testMaxInterval(Collections.emptyList(), null);
 		testMaxInterval(Arrays.asList(interval), interval);
@@ -41,7 +41,7 @@ class IntervalCollectionTest {
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMinInterval(IntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMinInterval(RegularIntervalImpl<T> interval) {
 
 		testMinInterval(Collections.emptyList(), null);
 		testMinInterval(Arrays.asList(interval), interval);
@@ -53,31 +53,31 @@ class IntervalCollectionTest {
 		
 	}
 
-	<T extends Comparable<? super T>> void testMinInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
+	<T extends Comparable<? super T>> void testMinInterval(List<IntervalShifting<T>> intervals, Interval<T> expexted) {
 			
 		var res = new IntervalCollection<>(intervals).minInterval();
 		if(expexted == null) {
 			assertTrue(res.isEmpty());
 		}
 		else {
-			assertEquals(expexted, new ImmutableInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+			assertEquals(expexted, new ImmutableRegularInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
 		}
 	}
 	
-	<T extends Comparable<? super T>> void testMaxInterval(List<IntervalImpl<T>> intervals, Interval<T> expexted) {
+	<T extends Comparable<? super T>> void testMaxInterval(List<IntervalShifting<T>> intervals, Interval<T> expexted) {
 			
 		var res = new IntervalCollection<>(intervals).maxInterval();
 		if(expexted == null) {
 			assertTrue(res.isEmpty());
 		}
 		else {
-			assertEquals(expexted, new ImmutableInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+			assertEquals(expexted, new ImmutableRegularInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
 		}
 	}
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMissingIntervals(IntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMissingIntervals(RegularIntervalImpl<T> interval) {
 		
 		testMissingInterval(emptyList(), emptyList(), interval);
 		testMissingInterval(singletonList(interval), emptyList(), interval);
@@ -105,7 +105,7 @@ class IntervalCollectionTest {
 	
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testOverlapIntervals(IntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testOverlapIntervals(RegularIntervalImpl<T> interval) {
 		
 		testOverlapInterval(emptyList(), emptyList(), interval);
 		testOverlapInterval(singletonList(interval), emptyList(), interval);
@@ -137,7 +137,7 @@ class IntervalCollectionTest {
 	
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testLinkedIntervals(IntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testLinkedIntervals(RegularIntervalImpl<T> interval) {
 		
 		testLinkedInterval(emptyList(), emptyList(), null, null, interval);
 		testLinkedInterval(singletonList(interval), emptyList(), null, null, interval);
@@ -164,11 +164,11 @@ class IntervalCollectionTest {
 	}
 	
 	
-	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
+	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals, RegularIntervalImpl<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
-		T min = intervals.stream().map(RegularInterval::getStart).min(Comparator.naturalOrder()).orElse(null);
-		T max = intervals.stream().map(RegularInterval::getExclusifEnd).max(Comparator.naturalOrder()).orElse(null);
+		T min = intervals.stream().map(Interval::getStart).min(Comparator.naturalOrder()).orElse(null);
+		T max = intervals.stream().map(Interval::getExclusifEnd).max(Comparator.naturalOrder()).orElse(null);
 		
 		assertEquals(!expectedIntervals.isEmpty(), ic.isMissingIntervals());
 		assertEquals(!expectedIntervals.isEmpty(), ic.isMissingIntervals(null, null));
@@ -191,7 +191,7 @@ class IntervalCollectionTest {
 			assertDoesNotThrow(()-> ic.requiredNotMissingIntervals(min, max));
 		}
 		if(!intervals.isEmpty()) {
-			IntervalImpl<T> outInterval = origin.create(min, max).shift(-1, 1);
+			IntervalShifting<T> outInterval = origin.create(min, max).shift(-1, 1);
 			expectedIntervals = new ArrayList<>(expectedIntervals);
 			expectedIntervals.add(0, outInterval.shiftStart(0, 1));
 			expectedIntervals.add(outInterval.shiftExclusifEnd(-1, 0));
@@ -202,7 +202,7 @@ class IntervalCollectionTest {
 		}
 	}
 	
-	private <T extends Comparable<? super T>> void testOverlapInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals, IntervalImpl<T> origin) {
+	private <T extends Comparable<? super T>> void testOverlapInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals, IntervalShifting<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
 		
@@ -218,9 +218,9 @@ class IntervalCollectionTest {
 		}
 	}
 	
-	private <T extends Comparable<? super T>> void testLinkedInterval(List<IntervalImpl<T>> intervals, List<IntervalImpl<T>> expectedIntervals,
+	private <T extends Comparable<? super T>> void testLinkedInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals,
 			
-			String exMessage, Class<? extends RuntimeException> clazz, IntervalImpl<T> origin) {
+			String exMessage, Class<? extends RuntimeException> clazz, RegularIntervalImpl<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
 		
@@ -237,6 +237,6 @@ class IntervalCollectionTest {
 	}
 
 	static Stream<Arguments> caseFactory() {
-		 return Stream.concat(IntervalTest.caseFactory(), PeriodTest.caseFactory());
+		 return Stream.concat(RegularIntervalTest.numberIntervals(), RegularIntervalTest.periodIntervals());
 	}
 }

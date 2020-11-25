@@ -58,9 +58,6 @@ class RegularIntervalTest {
 		assertFalse(interval.containsInterval(interval.shiftExclusifEnd(0, 1)));
 		assertTrue(interval.containsInterval(interval.shiftExclusifEnd(-1, 0)));
 		assertFalse(interval.containsInterval(interval.shiftExclusifEnd(-1, 1)));
-		
-		assertTrue(interval.containsInterval(interval.shiftStart(0, 0))); //??
-		assertTrue(interval.containsInterval(interval.shiftExclusifEnd(0, 0))); //??
 	}
 	
 	@ParameterizedTest(name="{0}")
@@ -84,9 +81,6 @@ class RegularIntervalTest {
 		assertFalse(interval.intersectInterval(interval.shiftExclusifEnd(0, 1)));
 		assertTrue(interval.intersectInterval(interval.shiftExclusifEnd(-1, 0)));
 		assertTrue(interval.intersectInterval(interval.shiftExclusifEnd(-1, 1)));
-
-		assertFalse(interval.intersectInterval(interval.shiftStart(0, 0))); //??
-		assertFalse(interval.intersectInterval(interval.shiftExclusifEnd(0, 0))); //??
 	}
 
 	@ParameterizedTest(name="{0}")

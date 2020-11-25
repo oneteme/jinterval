@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-final class CyclicIntervalImpl<T extends Comparable<? super T>> implements IntervalShifting<T>, CyclicInterval<T> {
+final class CyclicIntervalImpl<T extends Comparable<? super T>> implements IntervalShifting<T>, Interval<T> {
 
 	private final T start;
 	private final T exclusifEnd;

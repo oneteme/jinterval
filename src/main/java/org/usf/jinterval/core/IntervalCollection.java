@@ -24,11 +24,11 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	private final List<? extends Interval<T>> intervals;
 	
-	public Optional<RegularInterval<T>> minInterval() {
+	public Optional<Interval<T>> minInterval() {
 		return intervals.stream().collect(IntervalCollector.minInterval());
 	}
 
-	public Optional<RegularInterval<T>> maxInterval() {
+	public Optional<Interval<T>> maxInterval() {
 		return intervals.stream().collect(IntervalCollector.maxInterval());
 	}
 	
@@ -72,21 +72,21 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 
 	public List<Interval<T>> missingIntervals() {
 
-		return filter(null, null, MISSING_INTERVALS_FILTER, ImmutableRegularInterval::new, Collectors.toList());
+		return filter(null, null, MISSING_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	public List<Interval<T>> missingIntervals(T start, T exclusifEnd) {
 		
-		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, ImmutableRegularInterval::new, Collectors.toList());
+		return filter(start, exclusifEnd, MISSING_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	
 	public List<Interval<T>> overlapIntervals() {
 
-		return filter(null, null, OVERLAP_INTERVALS_FILTER, ImmutableRegularInterval::new, Collectors.toList());
+		return filter(null, null, OVERLAP_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	
 	public List<Interval<T>> dirtyIntervals() {
 
-		return filter(null, null, UNLINKED_INTERVALS_FILTER, ImmutableRegularInterval::new, Collectors.toList());
+		return filter(null, null, UNLINKED_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	
 	public <I extends Interval<T>, R> R collectMissingIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {

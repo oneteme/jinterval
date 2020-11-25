@@ -3,7 +3,7 @@ package org.usf.jinterval.calendar;
 import java.time.Month;
 import java.util.List;
 
-import org.usf.jinterval.core.CyclicInterval;
+import org.usf.jinterval.core.Interval;
 import org.usf.jinterval.core.Intervals;
 
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MonthIntervalSchedule<T> implements CyclicInterval<Month> {
+public class MonthIntervalSchedule<T> implements Interval<Month> {
 	
 	private final Month start;
 	private final Month exclusifEnd;

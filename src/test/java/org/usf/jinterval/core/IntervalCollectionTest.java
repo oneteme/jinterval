@@ -60,7 +60,7 @@ class IntervalCollectionTest {
 			assertTrue(res.isEmpty());
 		}
 		else {
-			assertEquals(expexted, new ImmutableRegularInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+			assertEquals(expexted, ImmutableInterval.of(res.get().getStart(), res.get().getExclusifEnd()));
 		}
 	}
 	
@@ -71,7 +71,7 @@ class IntervalCollectionTest {
 			assertTrue(res.isEmpty());
 		}
 		else {
-			assertEquals(expexted, new ImmutableRegularInterval<>(res.get().getStart(), res.get().getExclusifEnd()));
+			assertEquals(expexted, ImmutableInterval.of(res.get().getStart(), res.get().getExclusifEnd()));
 		}
 	}
 

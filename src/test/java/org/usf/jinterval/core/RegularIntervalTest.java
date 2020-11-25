@@ -92,10 +92,10 @@ class RegularIntervalTest {
 
 	static Stream<Arguments> numberIntervals() {
 	    return Stream.of(
-    		Arguments.arguments(new RegularIntervalImpl<>(1, 5, shiftInt)),
-    		Arguments.arguments(new RegularIntervalImpl<>(-5L, 5L, shiftLong)),
-    		Arguments.arguments(new RegularIntervalImpl<>(-30., -20., shiftDouble)),
-    		Arguments.arguments(new RegularIntervalImpl<>(BigDecimal.ONE, BigDecimal.TEN, shiftBigDecimal))
+    		Arguments.arguments(new RegularIntervalImpl<>(1, 5, (a,b)-> a+b)),
+    		Arguments.arguments(new RegularIntervalImpl<>(-5L, 5L, (a,b)-> a+b)),
+    		Arguments.arguments(new RegularIntervalImpl<>(-30., -20., (a,b)-> a+b)),
+    		Arguments.arguments(new RegularIntervalImpl<>(BigDecimal.ONE, BigDecimal.TEN, (a,b)-> a.add(BigDecimal.valueOf(b))))
 	    );
 	}
 
@@ -113,9 +113,5 @@ class RegularIntervalTest {
 		
 		return new RegularIntervalImpl<>(start, exclusifEnd, (o,v)->(T) o.plus(v, temporalUnit));
 	}
-
-	private static BinaryOperator<Integer> shiftInt = (a,b)-> a+b;
-	private static BiFunction<Long, Integer, Long> shiftLong = (a,b)-> a+b;
-	private static BiFunction<Double, Integer, Double> shiftDouble = (a,b)-> a+b;
-	private static BiFunction<BigDecimal, Integer, BigDecimal> shiftBigDecimal = (a,b)-> a.add(BigDecimal.valueOf(b));
+	
 }

@@ -4,6 +4,10 @@ import java.util.function.BiFunction;
 
 public interface IntervalShifting<T extends Comparable<? super T>> extends Interval<T> {
 
+	IntervalShifting<T> create(T s, T e);
+	
+	BiFunction<T, Integer, T> getFn();
+	
 	default T shiftStart(int v){
 		return getFn().apply(getStart(), v);
 	}
@@ -27,9 +31,5 @@ public interface IntervalShifting<T extends Comparable<? super T>> extends Inter
 	default IntervalShifting<T> shiftExclusifEnd(int v1, int v2){
 		return create(shiftExclusifEnd(v1), shiftExclusifEnd(v2));
 	}
-
-	IntervalShifting<T> create(T s, T e);
-	
-	BiFunction<T, Integer, T> getFn();
 
 }

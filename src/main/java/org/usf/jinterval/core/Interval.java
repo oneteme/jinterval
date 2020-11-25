@@ -8,16 +8,12 @@ public interface Interval<T extends Comparable<? super T>> {
 
 	T getExclusifEnd();
 	
-	default int direction() {
-		return direction(getStart(), getExclusifEnd());
-	}
-	
 	default boolean containsField(T temporal) {
 
 		int diff = direction();
-		return diff == 0 || diff > 0 
+		return diff == 0 || (diff > 0 
 				? getStart().compareTo(temporal) <= 0 && getExclusifEnd().compareTo(temporal) > 0
-				: getStart().compareTo(temporal) <= 0 || getExclusifEnd().compareTo(temporal) > 0;
+				: getStart().compareTo(temporal) <= 0 || getExclusifEnd().compareTo(temporal) > 0);
 	}
 	
 	default boolean containsInterval(Interval<T> p) {
@@ -66,6 +62,10 @@ public interface Interval<T extends Comparable<? super T>> {
 		return (diff ^ pDiff) >= 0
 				? getStart().compareTo(exclusifEnd) < 0 && getExclusifEnd().compareTo(start) > 0
 				: getStart().compareTo(exclusifEnd) < 0 || getExclusifEnd().compareTo(start) > 0;
+	}
+	
+	default int direction() {
+		return direction(getStart(), getExclusifEnd());
 	}
 	
 	static <T extends Comparable<? super T>> int direction(T start, T exclusifEnd) {

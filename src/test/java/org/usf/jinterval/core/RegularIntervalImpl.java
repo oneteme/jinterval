@@ -28,4 +28,9 @@ final class RegularIntervalImpl<T extends Comparable<? super T>> implements Inte
 		return Intervals.toString(this);
 	}
 	
+	@Override //important
+	public int direction() {
+		return RegularInterval.super.direction();
+	}
+	
 }

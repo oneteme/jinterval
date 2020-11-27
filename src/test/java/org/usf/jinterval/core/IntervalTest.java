@@ -1,22 +1,10 @@
 package org.usf.jinterval.core;
 
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.TEN;
-import static java.math.BigDecimal.valueOf;
-import static java.time.DayOfWeek.FRIDAY;
-import static java.time.DayOfWeek.TUESDAY;
-import static java.time.Month.MARCH;
-import static java.time.Month.SEPTEMBER;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.Month;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -24,77 +12,110 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class IntervalTest {
+class IntervalTest extends RegularIntervalTest {
 
-	@ParameterizedTest(name="{0}")
-	@MethodSource({"numberIntervals", "periodIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip) {
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testContainsField(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+		
+		var in = ofInterval(start, exclusifEnd, getFn);
 
-		testContainsField(ip, ip.getStart(), true);
-		testContainsField(ip, ip.shiftStart(1), true);
-		testContainsField(ip, ip.shiftStart(-1), false);
+		testContainsField(in, in.getStart(), true);
+		testContainsField(in, in.shiftStart(1), true);
+		testContainsField(in, in.shiftStart(-1), false);
 		
-		testContainsField(ip, ip.getExclusifEnd(), false);
-		testContainsField(ip, ip.shiftExclusifEnd(1), false);
-		testContainsField(ip, ip.shiftExclusifEnd(-1), true);
+		testContainsField(in, in.getExclusifEnd(), false);
+		testContainsField(in, in.shiftExclusifEnd(1), false);
+		testContainsField(in, in.shiftExclusifEnd(-1), true);
 		
-		assertTrue(ip.shiftStart(0, 0).containsField(ip.getStart()));
-		assertTrue(ip.shiftExclusifEnd(0, 0).containsField(ip.getExclusifEnd()));
+		assertTrue(in.shiftStart(0, 0).containsField(in.getStart()));
+		assertTrue(in.shiftExclusifEnd(0, 0).containsField(in.getExclusifEnd()));
 	}
 	
-	@ParameterizedTest(name="{0}")
-	@MethodSource({"numberIntervals", "periodIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testContainsInterval(IntervalShiftingProxy<T> ip) {
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testContainsInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
-		testContainsInterval(ip, ip, true, false); //in
+		var in = ofInterval(start, exclusifEnd, getFn);
 		
-		testContainsInterval(ip, ip.shift(1, 0), true, false);
-		testContainsInterval(ip, ip.shift(0, -1), true, false);
-		testContainsInterval(ip, ip.shift(1, -1), true, false);
+		testContainsInterval(in, in, true, false); //in
 		
-		testContainsInterval(ip, ip.shift(-1, 0), false,  false); //out
-		testContainsInterval(ip, ip.shift(0, 1), false,  false);
-		testContainsInterval(ip, ip.shift(-1, 1), false,  false);
+		testContainsInterval(in, in.shift(1, 0), true, false);
+		testContainsInterval(in, in.shift(0, -1), true, false);
+		testContainsInterval(in, in.shift(1, -1), true, false);
 		
-		testContainsInterval(ip, ip.shiftStart(-1, 0), false,  true); //out start
-		testContainsInterval(ip, ip.shiftStart(0, 1), true,  false);
-		testContainsInterval(ip, ip.shiftStart(-1, 1), false,  false);
+		testContainsInterval(in, in.shift(-1, 0), false,  false); //out
+		testContainsInterval(in, in.shift(0, 1), false,  false);
+		testContainsInterval(in, in.shift(-1, 1), false,  false);
 		
-		testContainsInterval(ip, ip.shiftExclusifEnd(-1, 0), true,  false); //out end
-		testContainsInterval(ip, ip.shiftExclusifEnd(0, 1), false,  true);
-		testContainsInterval(ip, ip.shiftExclusifEnd(-1, 1), false,  false);
+		testContainsInterval(in, in.shiftStart(-1, 0), false,  true); //out start
+		testContainsInterval(in, in.shiftStart(0, 1), true,  false);
+		testContainsInterval(in, in.shiftStart(-1, 1), false,  false);
 		
-		testContainsInterval(ip, ip.shiftStart(0, 0), false, false);
-		testContainsInterval(ip, ip.shiftExclusifEnd(0, 0), false,  false);
-		testContainsInterval(ip.shiftStart(0, 0), ip, true, true);
-		testContainsInterval(ip.shiftExclusifEnd(0, 0), ip, true,  true);
+		testContainsInterval(in, in.shiftExclusifEnd(-1, 0), true,  false); //out end
+		testContainsInterval(in, in.shiftExclusifEnd(0, 1), false,  true);
+		testContainsInterval(in, in.shiftExclusifEnd(-1, 1), false,  false);
+		
+		testContainsInterval(in, in.shiftStart(0, 0), false, false);
+		testContainsInterval(in, in.shiftExclusifEnd(0, 0), false,  false);
+		testContainsInterval(in.shiftStart(0, 0), in, true, true);
+		testContainsInterval(in.shiftExclusifEnd(0, 0), in, true,  true);
 	}
 	
 	
-	@ParameterizedTest(name="{0}")
-	@MethodSource({"numberIntervals", "periodIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testIntersectInterval(IntervalShiftingProxy<T> ip) {
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testIntersectInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
-		testIntersectInterval(ip, ip, true, false); //in
+		var in = ofInterval(start, exclusifEnd, getFn);
 		
-		testIntersectInterval(ip, ip.shift(1, 0), true, false);
-		testIntersectInterval(ip, ip.shift(0, -1), true, false);
-		testIntersectInterval(ip, ip.shift(1, -1), true, false);
+		testIntersectInterval(in, in, true, false); //in
 		
-		testIntersectInterval(ip, ip.shift(-1, 0), true,  true); //out
-		testIntersectInterval(ip, ip.shift(0, 1), true,  true);
-		testIntersectInterval(ip, ip.shift(-1, 1), true,  true);
+		testIntersectInterval(in, in.shift(1, 0), true, false);
+		testIntersectInterval(in, in.shift(0, -1), true, false);
+		testIntersectInterval(in, in.shift(1, -1), true, false);
 		
-		testIntersectInterval(ip, ip.shiftStart(-1, 0), false,  true); //out start
-		testIntersectInterval(ip, ip.shiftStart(0, 1), true,  false);
-		testIntersectInterval(ip, ip.shiftStart(-1, 1), true,  true);
+		testIntersectInterval(in, in.shift(-1, 0), true,  true); //out
+		testIntersectInterval(in, in.shift(0, 1), true,  true);
+		testIntersectInterval(in, in.shift(-1, 1), true,  true);
 		
-		testIntersectInterval(ip, ip.shiftExclusifEnd(-1, 0), true,  false); //out end
-		testIntersectInterval(ip, ip.shiftExclusifEnd(0, 1), false,  true);
-		testIntersectInterval(ip, ip.shiftExclusifEnd(-1, 1), true,  true);
+		testIntersectInterval(in, in.shiftStart(-1, 0), false,  true); //out start
+		testIntersectInterval(in, in.shiftStart(0, 1), true,  false);
+		testIntersectInterval(in, in.shiftStart(-1, 1), true,  true);
 		
-		testIntersectInterval(ip, ip.shiftStart(0, 0), true, true);
-		testIntersectInterval(ip, ip.shiftExclusifEnd(0, 0), true,  true);
+		testIntersectInterval(in, in.shiftExclusifEnd(-1, 0), true,  false); //out end
+		testIntersectInterval(in, in.shiftExclusifEnd(0, 1), false,  true);
+		testIntersectInterval(in, in.shiftExclusifEnd(-1, 1), true,  true);
+		
+		testIntersectInterval(in, in.shiftStart(0, 0), true, true);
+		testIntersectInterval(in, in.shiftExclusifEnd(0, 0), true,  true);
+	}
+	
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testIsRegular(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+
+		super.testIsRegular(start, exclusifEnd, getFn);
+		var in = ofInterval(start, exclusifEnd, getFn);
+		assertFalse(in.reverseInterval().isRegular());
+		assertFalse(in.shiftStart(0, 0).isInverted());
+		assertFalse(in.shiftExclusifEnd(0, 0).isInverted());
+	}
+	
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testIsInverted(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+
+		super.testIsInverted(start, exclusifEnd, getFn);
+		var in = ofInterval(start, exclusifEnd, getFn);
+		assertTrue(in.reverseInterval().isInverted());
+		assertTrue(in.shiftStart(0, 0).isInverted());
+		assertTrue(in.shiftExclusifEnd(0, 0).isInverted());
+	}
+
+	@Override
+	<T extends Comparable<? super T>> void testReverseInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+		//super.testReverseInterval(start, exclusifEnd, getFn); supported revert
 	}
 	
 	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected) {
@@ -136,56 +157,18 @@ class IntervalTest {
 		assertEquals(true, interval.reverseInterval().intersectInterval(ip.reverseInterval().getStart(), ip.reverseInterval().getExclusifEnd()));
 	}
 	
-	@ParameterizedTest(name="{0}")
-	@MethodSource({"numberIntervals", "periodIntervals"})
-	<T extends Comparable<? super T>> void testIsRegular(IntervalShiftingProxy<T> interval) {//increase test cov
-	
-		assertTrue(interval.isRegular());
-		assertFalse(interval.reverseInterval().isRegular());
-	}
-	
-	@ParameterizedTest(name="{0}")
-	@MethodSource({"numberIntervals", "periodIntervals"})
-	<T extends Comparable<? super T>> void testIsInverted(IntervalShiftingProxy<T> interval) {//increase test cov
-	
-		assertFalse(interval.isInverted());
-		assertTrue(interval.reverseInterval().isInverted());
-	}
-
-	static Stream<Arguments> numberIntervals() {
-	    return Stream.of(
-    		Arguments.arguments(ofInterval(1, 5, (a,b)-> a+b)),
-    		Arguments.arguments(ofInterval(-5L, 1L, (a,b)-> a+b)),
-    		Arguments.arguments(ofInterval(-30., -20., (a,b)-> a+b)),
-    		Arguments.arguments(ofInterval(ONE, TEN, (a,b)-> a.add(valueOf(b))))
-	    );
-	}
-	
-	static Stream<Arguments> enumIntervals() { 
+	static Stream<Arguments> temporalIntervals() { //override period interval
 		 return Stream.of(
-    		Arguments.arguments(ofInterval(MARCH, SEPTEMBER, (a,b)-> Month.values()[a.ordinal() + b])),
-    		Arguments.arguments(ofInterval(TUESDAY, FRIDAY, (a,b)-> DayOfWeek.values()[a.ordinal() + b]))
+    		Arguments.arguments(LocalTime.of(0 , 40), LocalTime.of(0, 55), shiftLocalTime)
 	    );
 	}
 
-	static Stream<Arguments> periodIntervals() {
-		 return Stream.of(
-    		Arguments.arguments(ofPeriod(LocalTime.of(0 , 40), LocalTime.of(0, 55), MINUTES))
-	    );
-	}
-
-	@SuppressWarnings("unchecked")
-	static <T extends Comparable<? super T> & Temporal> IntervalShiftingProxy<T> ofPeriod(T start, T exclusifEnd, ChronoUnit temporalUnit){
+	<T extends Comparable<? super T>> IntervalShiftingProxy<T> ofInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
 		
-		return ofInterval(start, exclusifEnd, (o,v)->(T) o.plus(v, temporalUnit));
+		return new IntervalShiftingProxy<>(create(start, exclusifEnd), this::create, getFn);
 	}
 	
-	static <T extends Comparable<? super T>> IntervalShiftingProxy<T> ofInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
-		
-		return new IntervalShiftingProxy<>(create(start, exclusifEnd), IntervalTest::create, getFn);
-	}
-	
-	static <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
+	<T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
 		
 		return new Interval<T>() {
 			@Override

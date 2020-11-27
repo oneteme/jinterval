@@ -237,6 +237,6 @@ class IntervalCollectionTest {
 	}
 
 	static Stream<Arguments> caseFactory() {
-		 return Stream.concat(RegularIntervalTest.numberIntervals(), RegularIntervalTest.periodIntervals());
+		 return Stream.concat(RegularIntervalTest.numberIntervals(), RegularIntervalTest.temporalIntervals());
 	}
 }

@@ -29,9 +29,6 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 	IntervalShiftingProxy<T> shiftExclusifEnd(int v1, int v2){
 		return copy(factory.apply(shiftExclusifEnd(v1), shiftExclusifEnd(v2)));
 	}
-	IntervalShiftingProxy<T> revert() {
-		return copy(factory.apply(getExclusifEnd(), getStart()));
-	}
 
 	IntervalShiftingProxy<T> copy(T start, T exclusifEnd){
 		return copy(factory.apply(start, exclusifEnd));
@@ -41,6 +38,10 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 	}
 	
 	/** Delegate public methods **/
+
+	IntervalShiftingProxy<T> reverseInterval() {
+		return interval.reverseInterval(this::copy);
+	}
 	
 	public T getStart() {
 		return interval.getStart();

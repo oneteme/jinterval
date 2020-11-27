@@ -1,5 +1,6 @@
 package org.usf.jinterval.core;
 
+import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 
 public interface Interval<T extends Comparable<? super T>> {
@@ -23,7 +24,7 @@ public interface Interval<T extends Comparable<? super T>> {
 	
 	default boolean containsInterval(T start, T exclusifEnd) {
 
-		return containsInterval(start, exclusifEnd, ()-> direction(start, exclusifEnd));
+		return containsInterval(start, exclusifEnd, ()-> Intervals.direction(start, exclusifEnd));
 	}
 
 	private boolean containsInterval(T start, T exclusifEnd, IntSupplier dirSupp) {
@@ -47,7 +48,7 @@ public interface Interval<T extends Comparable<? super T>> {
 	
 	default boolean intersectInterval(T start, T exclusifEnd) {
 
-		return intersectInterval(start, exclusifEnd, ()-> direction(start, exclusifEnd));
+		return intersectInterval(start, exclusifEnd, ()-> Intervals.direction(start, exclusifEnd));
 	}
 
 	private boolean intersectInterval(T start, T exclusifEnd, IntSupplier dirSupp) {
@@ -68,12 +69,15 @@ public interface Interval<T extends Comparable<? super T>> {
 		return direction() <= 0;
 	}
 	
-	default int direction() {
-		return direction(getStart(), getExclusifEnd());
+	default boolean isRegular() {
+		return direction() > 0;
+	}
+
+	default <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
+		return fn.apply(getExclusifEnd(), getStart());
 	}
 	
-	static <T extends Comparable<? super T>> int direction(T start, T exclusifEnd) {
-		
-		return exclusifEnd.compareTo(start);
+	default int direction() {
+		return Intervals.direction(getStart(), getExclusifEnd());
 	}
 }

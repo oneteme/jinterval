@@ -27,6 +27,6 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	
 	public static <T extends Comparable<? super T>> ImmutableInterval<T> of(T start, T exclusifEnd){
 		
-		return new ImmutableInterval<>(requireNonNull(start), requireNonNull(exclusifEnd), Interval.direction(start, exclusifEnd));
+		return new ImmutableInterval<>(requireNonNull(start), requireNonNull(exclusifEnd), Intervals.direction(start, exclusifEnd));
 	}
 }

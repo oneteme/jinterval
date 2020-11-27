@@ -13,6 +13,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.usf.jinterval.Utils.assertExceptionMsg;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.usf.jinterval.Utils;
 
 class RegularIntervalTest {
 
@@ -89,12 +91,26 @@ class RegularIntervalTest {
 		assertFalse(ip.intersectInterval(ip.shiftExclusifEnd(0, 1)));
 		assertTrue(ip.intersectInterval(ip.shiftExclusifEnd(-1, 1)));
 	}
+
+	
+	@ParameterizedTest(name="{0}")
+	@MethodSource({"numberIntervals", "periodIntervals"})
+	<T extends Comparable<? super T>> void testIsRegular(IntervalShiftingProxy<T> interval) {//increase test cov
+	
+		assertTrue(interval.isRegular());
+	}
 	
 	@ParameterizedTest(name="{0}")
 	@MethodSource({"numberIntervals", "periodIntervals"})
 	<T extends Comparable<? super T>> void testIsInverted(IntervalShiftingProxy<T> interval) {//increase test cov
 	
 		assertFalse(interval.isInverted());
+	}
+	
+	@ParameterizedTest(name="{0}")
+	@MethodSource({"numberIntervals", "periodIntervals"})
+	<T extends Comparable<? super T>> void testReverseInterval(IntervalShiftingProxy<T> interval) {
+		assertExceptionMsg(UnsupportedOperationException.class, ()-> interval.reverseInterval(), "cannot reverse regular interval");
 	}
 
 	static Stream<Arguments> numberIntervals() {

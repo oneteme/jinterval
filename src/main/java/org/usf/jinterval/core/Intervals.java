@@ -7,6 +7,11 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Intervals {
+
+	public static <T extends Comparable<? super T>> int direction(T start, T exclusifEnd) {
+		
+		return exclusifEnd.compareTo(start);
+	}
 	
 	public static <T extends Comparable<? super T>> T min(T a, T b){
 		return a.compareTo(b) <= 0 ? a : b;

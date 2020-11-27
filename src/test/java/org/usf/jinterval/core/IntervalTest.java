@@ -100,18 +100,18 @@ class IntervalTest {
 	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected) {
 		
 		assertEquals(expected, ip.containsField(field));
-		assertEquals(!expected, ip.revert().containsField(field));
+		assertEquals(!expected, ip.reverseInterval().containsField(field));
 	}
 
 	<T extends Comparable<? super T>> void testContainsInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expectedR) {
 		
 		assertEquals(expected, ip.containsInterval(interval));
-		assertEquals(expectedR, ip.revert().containsInterval(interval));
-		assertEquals(expected && expectedR, ip.containsInterval(interval.revert()));
+		assertEquals(expectedR, ip.reverseInterval().containsInterval(interval));
+		assertEquals(expected && expectedR, ip.containsInterval(interval.reverseInterval()));
 		
 		assertEquals(expected, ip.containsInterval(interval.getStart(), interval.getExclusifEnd()));
-		assertEquals(expectedR, ip.revert().containsInterval(interval.getStart(), interval.getExclusifEnd()));
-		assertEquals(expected && expectedR, ip.containsInterval(interval.revert().getStart(), interval.revert().getExclusifEnd()));
+		assertEquals(expectedR, ip.reverseInterval().containsInterval(interval.getStart(), interval.getExclusifEnd()));
+		assertEquals(expected && expectedR, ip.containsInterval(interval.reverseInterval().getStart(), interval.reverseInterval().getExclusifEnd()));
 	}
 	
 	<T extends Comparable<? super T>> void testIntersectInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expextedR) {
@@ -119,30 +119,37 @@ class IntervalTest {
 		assertEquals(expected, ip.intersectInterval(interval));
 		assertEquals(expected, interval.intersectInterval(ip));
 		
-		assertEquals(expextedR, ip.revert().intersectInterval(interval));
-		assertEquals(expextedR, interval.intersectInterval(ip.revert()));
+		assertEquals(expextedR, ip.reverseInterval().intersectInterval(interval));
+		assertEquals(expextedR, interval.intersectInterval(ip.reverseInterval()));
 
-		assertEquals(true, ip.revert().intersectInterval(interval.revert()));
-		assertEquals(true, interval.revert().intersectInterval(ip.revert()));
+		assertEquals(true, ip.reverseInterval().intersectInterval(interval.reverseInterval()));
+		assertEquals(true, interval.reverseInterval().intersectInterval(ip.reverseInterval()));
 		
 
 		assertEquals(expected, ip.intersectInterval(interval.getStart(), interval.getExclusifEnd()));
 		assertEquals(expected, interval.intersectInterval(ip.getStart(), ip.getExclusifEnd()));
 		
-		assertEquals(expextedR, ip.revert().intersectInterval(interval.getStart(), interval.getExclusifEnd()));
-		assertEquals(expextedR, interval.intersectInterval(ip.revert().getStart(), ip.revert().getExclusifEnd()));
+		assertEquals(expextedR, ip.reverseInterval().intersectInterval(interval.getStart(), interval.getExclusifEnd()));
+		assertEquals(expextedR, interval.intersectInterval(ip.reverseInterval().getStart(), ip.reverseInterval().getExclusifEnd()));
 
-		assertEquals(true, ip.revert().intersectInterval(interval.revert().getStart(), interval.revert().getExclusifEnd()));
-		assertEquals(true, interval.revert().intersectInterval(ip.revert().getStart(), ip.revert().getExclusifEnd()));
+		assertEquals(true, ip.reverseInterval().intersectInterval(interval.reverseInterval().getStart(), interval.reverseInterval().getExclusifEnd()));
+		assertEquals(true, interval.reverseInterval().intersectInterval(ip.reverseInterval().getStart(), ip.reverseInterval().getExclusifEnd()));
 	}
 	
-
+	@ParameterizedTest(name="{0}")
+	@MethodSource({"numberIntervals", "periodIntervals"})
+	<T extends Comparable<? super T>> void testIsRegular(IntervalShiftingProxy<T> interval) {//increase test cov
+	
+		assertTrue(interval.isRegular());
+		assertFalse(interval.reverseInterval().isRegular());
+	}
+	
 	@ParameterizedTest(name="{0}")
 	@MethodSource({"numberIntervals", "periodIntervals"})
 	<T extends Comparable<? super T>> void testIsInverted(IntervalShiftingProxy<T> interval) {//increase test cov
 	
 		assertFalse(interval.isInverted());
-		assertTrue(interval.revert().isInverted());
+		assertTrue(interval.reverseInterval().isInverted());
 	}
 
 	static Stream<Arguments> numberIntervals() {

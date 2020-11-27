@@ -28,7 +28,7 @@ class IntervalCollectionTest {
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMaxInterval(RegularIntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMaxInterval(IntervalShiftingProxy<T> interval) {
 
 		testMaxInterval(Collections.emptyList(), null);
 		testMaxInterval(Arrays.asList(interval), interval);
@@ -41,7 +41,7 @@ class IntervalCollectionTest {
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMinInterval(RegularIntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMinInterval(IntervalShiftingProxy<T> interval) {
 
 		testMinInterval(Collections.emptyList(), null);
 		testMinInterval(Arrays.asList(interval), interval);
@@ -53,7 +53,7 @@ class IntervalCollectionTest {
 		
 	}
 
-	<T extends Comparable<? super T>> void testMinInterval(List<IntervalShifting<T>> intervals, Interval<T> expexted) {
+	<T extends Comparable<? super T>> void testMinInterval(List<Interval<T>> intervals, Interval<T> expexted) {
 			
 		var res = new IntervalCollection<>(intervals).minInterval();
 		if(expexted == null) {
@@ -64,7 +64,7 @@ class IntervalCollectionTest {
 		}
 	}
 	
-	<T extends Comparable<? super T>> void testMaxInterval(List<IntervalShifting<T>> intervals, Interval<T> expexted) {
+	<T extends Comparable<? super T>> void testMaxInterval(List<Interval<T>> intervals, Interval<T> expexted) {
 			
 		var res = new IntervalCollection<>(intervals).maxInterval();
 		if(expexted == null) {
@@ -77,94 +77,94 @@ class IntervalCollectionTest {
 
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testMissingIntervals(RegularIntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testMissingIntervals(IntervalShiftingProxy<T> interval) {
 		
 		testMissingInterval(emptyList(), emptyList(), interval);
 		testMissingInterval(singletonList(interval), emptyList(), interval);
 		testMissingInterval(asList(interval, interval), emptyList(), interval);
 
-		testMissingInterval(asList(interval, interval.prev(-1, 0)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.next(0, 1)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-1, 0)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftExclusifEnd(0, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-1, 0), interval.shiftExclusifEnd(0, 1)), emptyList(), interval);
 
-		testMissingInterval(asList(interval, interval.prev(-2, -1)), singletonList(interval.prev(-1, 0)), interval);
-		testMissingInterval(asList(interval, interval.next(1, 2)), singletonList(interval.next(0, 1)), interval);
-		testMissingInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), asList(interval.prev(-1, 0), interval.next(0, 1)), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-2, -1)), singletonList(interval.shiftStart(-1, 0)), interval);
+		testMissingInterval(asList(interval, interval.shiftExclusifEnd(1, 2)), singletonList(interval.shiftExclusifEnd(0, 1)), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-2, -1), interval.shiftExclusifEnd(1, 2)), asList(interval.shiftStart(-1, 0), interval.shiftExclusifEnd(0, 1)), interval);
 
-		testMissingInterval(asList(interval, interval.prev(0, 1)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.next(-1, 0)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(0, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftExclusifEnd(-1, 0)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), emptyList(), interval);
 		
-		testMissingInterval(asList(interval, interval.prev(-1, 1)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.next(-1, 1)), emptyList(), interval);
-		testMissingInterval(asList(interval, interval.prev(-1, 1), interval.next(-1, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-1, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftExclusifEnd(-1, 1)), emptyList(), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-1, 1), interval.shiftExclusifEnd(-1, 1)), emptyList(), interval);
 		
-		testMissingInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), singletonList(interval.prev(-2, 0)), interval);
-		testMissingInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), singletonList(interval.next(0, 2)), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-5, -2), interval.shiftExclusifEnd(-2, 10)), singletonList(interval.shiftStart(-2, 0)), interval);
+		testMissingInterval(asList(interval, interval.shiftStart(-10, 2), interval.shiftExclusifEnd(2, 5)), singletonList(interval.shiftExclusifEnd(0, 2)), interval);
 	}
 	
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testOverlapIntervals(RegularIntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testOverlapIntervals(IntervalShiftingProxy<T> interval) {
 		
 		testOverlapInterval(emptyList(), emptyList(), interval);
 		testOverlapInterval(singletonList(interval), emptyList(), interval);
 		testOverlapInterval(asList(interval, interval), singletonList(interval), interval);
 
-		testOverlapInterval(asList(interval, interval.prev(-1, 0)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.next(0, 1)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-1, 0)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(0, 1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-1, 0), interval.shiftExclusifEnd(0, 1)), emptyList(), interval);
 
-		testOverlapInterval(asList(interval, interval.prev(-2, -1)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.next(1, 2)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-2, -1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(1, 2)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-2, -1), interval.shiftExclusifEnd(1, 2)), emptyList(), interval);
 
-		testOverlapInterval(asList(interval, interval.prev(0, 1)), asList(interval.prev(0, 1)), interval);
-		testOverlapInterval(asList(interval, interval.next(-1, 0)), asList(interval.next(-1, 0)), interval);
-		testOverlapInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), asList(interval.prev(0, 1), interval.next(-1, 0)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(0, 1)), asList(interval.shiftStart(0, 1)), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(-1, 0)), asList(interval.shiftExclusifEnd(-1, 0)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), asList(interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), interval);
 		
-		testOverlapInterval(asList(interval, interval.prev(-1, 1)), asList(interval.prev(0, 1)), interval);
-		testOverlapInterval(asList(interval, interval.next(-1, 1)), asList(interval.next(-1, 0)), interval);
-		testOverlapInterval(asList(interval, interval.prev(-1, 1), interval.next(-1, 1)), asList(interval.prev(0, 1), interval.next(-1, 0)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-1, 1)), asList(interval.shiftStart(0, 1)), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(-1, 1)), asList(interval.shiftExclusifEnd(-1, 0)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-1, 1), interval.shiftExclusifEnd(-1, 1)), asList(interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), interval);
 		
-		testOverlapInterval(asList(interval, interval.prev(-2, -1)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.next(1, 2)), emptyList(), interval);
-		testOverlapInterval(asList(interval, interval.next(1, 2), interval.prev(-2, -1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-2, -1)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(1, 2)), emptyList(), interval);
+		testOverlapInterval(asList(interval, interval.shiftExclusifEnd(1, 2), interval.shiftStart(-2, -1)), emptyList(), interval);
 
-		testOverlapInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), singletonList(interval.next(-2, 0)), interval);
-		testOverlapInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), singletonList(interval.prev(0, 2)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-5, -2), interval.shiftExclusifEnd(-2, 10)), singletonList(interval.shiftExclusifEnd(-2, 0)), interval);
+		testOverlapInterval(asList(interval, interval.shiftStart(-10, 2), interval.shiftExclusifEnd(2, 5)), singletonList(interval.shiftStart(0, 2)), interval);
 	}
 	
 	@ParameterizedTest(name="{0}")
 	@MethodSource("caseFactory")
-	<T extends Comparable<? super T>> void testLinkedIntervals(RegularIntervalImpl<T> interval) {
+	<T extends Comparable<? super T>> void testLinkedIntervals(IntervalShiftingProxy<T> interval) {
 		
 		testLinkedInterval(emptyList(), emptyList(), null, null, interval);
 		testLinkedInterval(singletonList(interval), emptyList(), null, null, interval);
 		testLinkedInterval(asList(interval, interval), singletonList(interval), "overlap interval", OverlapIntervalException.class, interval);
 
-		testLinkedInterval(asList(interval, interval.prev(-1, 0)), emptyList(), null, null, interval);
-		testLinkedInterval(asList(interval, interval.next(0, 1)), emptyList(), null, null, interval);
-		testLinkedInterval(asList(interval, interval.prev(-1, 0), interval.next(0, 1)), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-1, 0)), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval.shiftExclusifEnd(0, 1)), emptyList(), null, null, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-1, 0), interval.shiftExclusifEnd(0, 1)), emptyList(), null, null, interval);
 
-		testLinkedInterval(asList(interval, interval.prev(-2, -1)), singletonList(interval.prev(-1, 0)), "missing interval", MissingIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.next(1, 2)), singletonList(interval.next(0, 1)), "missing interval", MissingIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.prev(-2, -1), interval.next(1, 2)), asList(interval.prev(-1, 0), interval.next(0, 1)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-2, -1)), singletonList(interval.shiftStart(-1, 0)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftExclusifEnd(1, 2)), singletonList(interval.shiftExclusifEnd(0, 1)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-2, -1), interval.shiftExclusifEnd(1, 2)), asList(interval.shiftStart(-1, 0), interval.shiftExclusifEnd(0, 1)), "missing interval", MissingIntervalException.class, interval);
 
-		testLinkedInterval(asList(interval, interval.prev(0, 1)), asList(interval.prev(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.next(-1, 0)), asList(interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.prev(0, 1), interval.next(-1, 0)), asList(interval.prev(0, 1), interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(0, 1)), asList(interval.shiftStart(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftExclusifEnd(-1, 0)), asList(interval.shiftExclusifEnd(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), asList(interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
 		
-		testLinkedInterval(asList(interval, interval.prev(-1, 1)), asList(interval.prev(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.next(-1, 1)), asList(interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.prev(-1, 1), interval.next(-1, 1)), asList(interval.prev(0, 1), interval.next(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-1, 1)), asList(interval.shiftStart(0, 1)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftExclusifEnd(-1, 1)), asList(interval.shiftExclusifEnd(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-1, 1), interval.shiftExclusifEnd(-1, 1)), asList(interval.shiftStart(0, 1), interval.shiftExclusifEnd(-1, 0)), "overlap interval", OverlapIntervalException.class, interval);
 		
-		testLinkedInterval(asList(interval, interval.prev(-5, -2), interval.next(-2, 10)), asList(interval.prev(-2, 0), interval.next(-2, 0)), "missing interval", MissingIntervalException.class, interval);
-		testLinkedInterval(asList(interval, interval.prev(-10, 2), interval.next(2, 5)), asList(interval.prev(0, 2), interval.next(0, 2)), "overlap interval", OverlapIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-5, -2), interval.shiftExclusifEnd(-2, 10)), asList(interval.shiftStart(-2, 0), interval.shiftExclusifEnd(-2, 0)), "missing interval", MissingIntervalException.class, interval);
+		testLinkedInterval(asList(interval, interval.shiftStart(-10, 2), interval.shiftExclusifEnd(2, 5)), asList(interval.shiftStart(0, 2), interval.shiftExclusifEnd(0, 2)), "overlap interval", OverlapIntervalException.class, interval);
 	}
 	
 	
-	private <T extends Comparable<? super T>> void testMissingInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals, RegularIntervalImpl<T> origin) {
+	private <T extends Comparable<? super T>> void testMissingInterval(List<Interval<T>> intervals, List<Interval<T>> expectedIntervals, IntervalShiftingProxy<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
 		T min = intervals.stream().map(Interval::getStart).min(Comparator.naturalOrder()).orElse(null);
@@ -178,9 +178,9 @@ class IntervalCollectionTest {
 		assertArrayEquals(expectedIntervals.toArray(), ic.missingIntervals(null, null).toArray());
 		assertArrayEquals(expectedIntervals.toArray(), ic.missingIntervals(min, max).toArray());
 		
-		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(origin::create, Collectors.toList()).toArray());
-		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(null, null, origin::create, Collectors.toList()).toArray());
-		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(min, max, origin::create, Collectors.toList()).toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(origin.getFactory(), Collectors.toList()).toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(null, null, origin.getFactory(), Collectors.toList()).toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(min, max, origin.getFactory(), Collectors.toList()).toArray());
 		
 		if(!expectedIntervals.isEmpty()) {
 			Utils.assertExceptionMsg(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(), "missing interval");
@@ -191,24 +191,24 @@ class IntervalCollectionTest {
 			assertDoesNotThrow(()-> ic.requiredNotMissingIntervals(min, max));
 		}
 		if(!intervals.isEmpty()) {
-			IntervalShifting<T> outInterval = origin.create(min, max).shift(-1, 1);
+			IntervalShiftingProxy<T> outInterval = origin.copy(min, max).shift(-1, 1);
 			expectedIntervals = new ArrayList<>(expectedIntervals);
 			expectedIntervals.add(0, outInterval.shiftStart(0, 1));
 			expectedIntervals.add(outInterval.shiftExclusifEnd(-1, 0));
 			assertEquals(true, ic.isMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()));
 			assertArrayEquals(expectedIntervals.toArray(), ic.missingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()).toArray());
-			assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd(), origin::create, Collectors.toList()).toArray());
+			assertArrayEquals(expectedIntervals.toArray(), ic.collectMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd(), origin.getFactory(), Collectors.toList()).toArray());
 			assertExceptionMsg(MissingIntervalException.class, ()-> ic.requiredNotMissingIntervals(outInterval.getStart(), outInterval.getExclusifEnd()), "missing interval");
 		}
 	}
 	
-	private <T extends Comparable<? super T>> void testOverlapInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals, IntervalShifting<T> origin) {
+	private <T extends Comparable<? super T>> void testOverlapInterval(List<Interval<T>> intervals, List<Interval<T>> expectedIntervals, IntervalShiftingProxy<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
 		
 		assertEquals(!expectedIntervals.isEmpty(), ic.isOverlapIntervals());
 		assertArrayEquals(expectedIntervals.toArray(), ic.overlapIntervals().toArray());
-		assertArrayEquals(expectedIntervals.toArray(), ic.collectOverlapIntervals(origin::create, Collectors.toList()).toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectOverlapIntervals(origin.getFactory(), Collectors.toList()).toArray());
 
 		if(!expectedIntervals.isEmpty()) {
 			assertExceptionMsg(OverlapIntervalException.class, ()-> ic.requiredNotOverlapIntervals(), "overlap interval");
@@ -218,15 +218,15 @@ class IntervalCollectionTest {
 		}
 	}
 	
-	private <T extends Comparable<? super T>> void testLinkedInterval(List<IntervalShifting<T>> intervals, List<IntervalShifting<T>> expectedIntervals,
+	private <T extends Comparable<? super T>> void testLinkedInterval(List<Interval<T>> intervals, List<Interval<T>> expectedIntervals,
 			
-			String exMessage, Class<? extends RuntimeException> clazz, RegularIntervalImpl<T> origin) {
+			String exMessage, Class<? extends RuntimeException> clazz, IntervalShiftingProxy<T> origin) {
 		
 		IntervalCollection<T> ic = new IntervalCollection<>(intervals);
 		
 		assertEquals(exMessage == null, ic.isLinkedIntervals());
 		assertArrayEquals(expectedIntervals.toArray(), ic.dirtyIntervals().toArray());
-		assertArrayEquals(expectedIntervals.toArray(), ic.collectDirtyIntervals(origin::create, Collectors.toList()).toArray());
+		assertArrayEquals(expectedIntervals.toArray(), ic.collectDirtyIntervals(origin.getFactory(), Collectors.toList()).toArray());
 		
 		if(exMessage != null) {
 			assertExceptionMsg(clazz, ()-> ic.requiredLinkedIntervals(), exMessage);

@@ -1,7 +1,5 @@
 package org.usf.jinterval.core;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Objects;
 
 import lombok.AccessLevel;
@@ -19,7 +17,7 @@ public final class Intervals {
 	}
 	
 	public static boolean equals(Interval<?> a, Interval<?> b) {
-		return Objects.equals(requireNonNull(a).getStart(), requireNonNull(b).getStart()) 
+		return Objects.equals(a.getStart(), b.getStart()) 
 				&& Objects.equals(a.getExclusifEnd(), b.getExclusifEnd());
 	}
 	

@@ -64,6 +64,10 @@ public interface Interval<T extends Comparable<? super T>> {
 				: getStart().compareTo(exclusifEnd) < 0 || getExclusifEnd().compareTo(start) > 0;
 	}
 	
+	default boolean isInverted() {
+		return direction() <= 0;
+	}
+	
 	default int direction() {
 		return direction(getStart(), getExclusifEnd());
 	}

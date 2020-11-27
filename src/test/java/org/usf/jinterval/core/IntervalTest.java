@@ -62,7 +62,6 @@ class IntervalTest extends RegularIntervalTest {
 		testContainsInterval(in.shiftExclusifEnd(0, 0), in, true,  true);
 	}
 	
-	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testIntersectInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
@@ -98,8 +97,8 @@ class IntervalTest extends RegularIntervalTest {
 		super.testIsRegular(start, exclusifEnd, getFn);
 		var in = ofInterval(start, exclusifEnd, getFn);
 		assertFalse(in.reverseInterval().isRegular());
-		assertFalse(in.shiftStart(0, 0).isInverted());
-		assertFalse(in.shiftExclusifEnd(0, 0).isInverted());
+		assertFalse(in.shiftStart(0, 0).isRegular());
+		assertFalse(in.shiftExclusifEnd(0, 0).isRegular());
 	}
 	
 	@ParameterizedTest(name="[{0}, {1}[")
@@ -163,12 +162,7 @@ class IntervalTest extends RegularIntervalTest {
 	    );
 	}
 
-	<T extends Comparable<? super T>> IntervalShiftingProxy<T> ofInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
-		
-		return new IntervalShiftingProxy<>(create(start, exclusifEnd), this::create, getFn);
-	}
-	
-	<T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
+	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
 		
 		return new Interval<T>() {
 			@Override

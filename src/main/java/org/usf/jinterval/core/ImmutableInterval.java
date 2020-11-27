@@ -2,12 +2,13 @@ package org.usf.jinterval.core;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
+
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@EqualsAndHashCode(exclude = "direction")
+//@EqualsAndHashCode(exclude = "direction")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
 	
@@ -18,6 +19,20 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	@Override
 	public int direction() {
 		return direction;
+	}
+	
+	public ImmutableInterval<T> reverseInterval() {
+		return Interval.super.reverseInterval(ImmutableInterval::of);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj == this || (obj instanceof Interval && Intervals.equals(this, (Interval<?>)obj));
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(start, exclusifEnd);
 	}
 	
 	@Override

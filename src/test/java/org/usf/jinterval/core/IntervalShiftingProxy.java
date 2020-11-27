@@ -71,7 +71,7 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 		return interval.isInverted();
 	}
 	public String toString() {
-		return Intervals.toString(interval);
+		return interval.toString();
 	}
 	
 	@Override

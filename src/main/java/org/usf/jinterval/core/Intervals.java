@@ -21,7 +21,7 @@ public final class Intervals {
 		return a.compareTo(b) >= 0 ? a : b;
 	}
 	
-	public static boolean equals(Interval<?> a, Interval<?> b) {
+	public static boolean equals(Interval<?> a, Interval<?> b) {// start & end cannot be null
 		return Objects.equals(a.getStart(), b.getStart()) 
 				&& Objects.equals(a.getExclusifEnd(), b.getExclusifEnd());
 	}

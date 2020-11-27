@@ -17,8 +17,13 @@ public interface RegularInterval<T extends Comparable<? super T>> extends Interv
 	default <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
 		throw new UnsupportedOperationException("cannot reverse regular interval");
 	}
+	
+	default Optional<Interval<T>> intervalIntersection(RegularInterval<T> inverval) {
+		
+		return intervalIntersection(inverval.getStart(), inverval.getExclusifEnd());
+	}
 
-	default Optional<Interval<T>> intervalIntersection(T start, T exclusifEnd) {
+	default Optional<Interval<T>> intervalIntersection(T start, T exclusifEnd) { //assert direction > 0
 		T s = max(getStart(), start);
 		T e = min(getExclusifEnd(), exclusifEnd);
 		return s.compareTo(e)>=0 

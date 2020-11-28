@@ -23,6 +23,16 @@ final class ImmutableIntervalTest extends IntervalTest {
 	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testReverseInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
+
+		var val = create(start, exclusifEnd);
+		var rev = val.reverseInterval();
+		assertEquals(val.getStart(), rev.getExclusifEnd());
+		assertEquals(val.getExclusifEnd(), rev.getStart());
+	}
+	
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testEquals(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
 
 		var in = ofInterval(start, exclusifEnd, getFn);
@@ -31,7 +41,8 @@ final class ImmutableIntervalTest extends IntervalTest {
 		assertTrue(val.equals(val));
 		assertTrue(val.equals(in));
 		assertFalse(val.equals(null));
-		assertFalse(val.equals(create(exclusifEnd, start)));
+		assertFalse(val.equals(val.reverseInterval()));
+		assertTrue(val.equals(val.reverseInterval().reverseInterval()));
 		
 		assertFalse(val.equals(start));
 		assertFalse(val.equals(exclusifEnd));
@@ -41,7 +52,7 @@ final class ImmutableIntervalTest extends IntervalTest {
 		assertFalse(val.equals(in.shift(1, 0)));
 		assertFalse(val.equals(in.shift(-1, 0)));
 	}
-
+	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testHashCode(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
@@ -50,14 +61,15 @@ final class ImmutableIntervalTest extends IntervalTest {
 		
 		Set<Interval<T>> intervals = new HashSet<Interval<T>>();
 		intervals.add(in);
-		intervals.add(in);
+		intervals.add(in);//same
+		intervals.add(create(start, exclusifEnd));//equals
 		assertEquals(1, intervals.size());
 		intervals.add(create(exclusifEnd, start));
 		assertEquals(2, intervals.size());
 	}
 	
 	@Override
-	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
+	public <T extends Comparable<? super T>> ImmutableInterval<T> create(T start, T exclusifEnd){
 		
 		return ImmutableInterval.of(start, exclusifEnd);
 	}

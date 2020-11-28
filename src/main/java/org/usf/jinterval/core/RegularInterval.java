@@ -17,6 +17,11 @@ public interface RegularInterval<T extends Comparable<? super T>> extends Interv
 	default <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
 		throw new UnsupportedOperationException("cannot reverse regular interval");
 	}
+
+	@Override
+	default boolean reverseOf(Interval<T> interval) {
+		throw new UnsupportedOperationException("cannot reverse regular interval");
+	}
 	
 	default Optional<Interval<T>> intervalIntersection(RegularInterval<T> inverval) {
 		

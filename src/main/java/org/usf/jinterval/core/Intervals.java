@@ -25,6 +25,15 @@ public final class Intervals {
 		return Objects.equals(a.getStart(), b.getStart()) 
 				&& Objects.equals(a.getExclusifEnd(), b.getExclusifEnd());
 	}
+
+	public static boolean symmetric(Interval<?> a, Interval<?> b) {// start & end cannot be null
+		return Objects.equals(a.getStart(), b.getExclusifEnd()) 
+				&& Objects.equals(a.getExclusifEnd(), b.getStart());
+	}
+
+	public static String toString(int start, int exclusifEnd){
+		return "[" + start + ", " + exclusifEnd  + "[";
+	}
 	
 	public static String toString(Interval<?> i){
 		return toString(i.getStart(), i.getExclusifEnd());

@@ -77,6 +77,10 @@ public interface Interval<T extends Comparable<? super T>> {
 		return fn.apply(getExclusifEnd(), getStart());
 	}
 	
+	default boolean reverseOf(Interval<T> interval) {
+		return Intervals.symmetric(this, interval);
+	}
+	
 	default int direction() {
 		return Intervals.direction(getStart(), getExclusifEnd());
 	}

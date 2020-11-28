@@ -13,7 +13,6 @@ import java.util.stream.Collector;
 import org.usf.jinterval.core.IntervalCollector.SimpleInterval;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +73,6 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	}
 	
 	@NoArgsConstructor
-	@AllArgsConstructor
 	@Getter
 	static final class SimpleInterval<T extends Comparable<? super T>> implements Interval<T> {
 	

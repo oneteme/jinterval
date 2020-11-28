@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.usf.jinterval.core.Intervals;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,7 +27,7 @@ final class SingleModelPart<M> {
 	
 	@Override
 	public String toString() {
-		return model + " : [" + start + " - " + exclusifEnd + "]";
+		return model + " : " + Intervals.toString(start, exclusifEnd);
 	}
 	
 	static final <M> List<SingleModelPart<M>> assign(List<SingleModelPart<M>> l1, List<SingleModelPart<M>> l2) {

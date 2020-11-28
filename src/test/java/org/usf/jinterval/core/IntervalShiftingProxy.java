@@ -36,12 +36,11 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 	IntervalShiftingProxy<T> copy(Interval<T> inverval){
 		return new IntervalShiftingProxy<>(inverval, factory, fn);
 	}
+	IntervalShiftingProxy<T> reverseInterval() {
+		return this.reverseInterval(this::copy);
+	}
 	
 	/** Delegate public methods **/
-
-	IntervalShiftingProxy<T> reverseInterval() {
-		return interval.reverseInterval(this::copy);
-	}
 	
 	public T getStart() {
 		return interval.getStart();
@@ -67,15 +66,25 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 	public int direction() {
 		return interval.direction();
 	}
+	public boolean isRegular() {
+		return interval.isRegular();
+	}
 	public boolean isInverted() {
 		return interval.isInverted();
 	}
+	public <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
+		return interval.reverseInterval(fn);
+	}
+	public boolean reverseOf(Interval<T> val) {
+		return interval.reverseOf(val);
+	}
+	public boolean equals(Object obj) {
+		return interval.equals(obj);
+	}
+	public int hashCode() {
+		return interval.hashCode();
+	}
 	public String toString() {
 		return interval.toString();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return Intervals.equals(this, (Interval<?>) obj);
 	}
 }

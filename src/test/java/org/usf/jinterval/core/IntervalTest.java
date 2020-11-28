@@ -112,9 +112,32 @@ class IntervalTest extends RegularIntervalTest {
 		assertTrue(in.shiftExclusifEnd(0, 0).isInverted());
 	}
 
-	@Override
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testReverseInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
-		//super.testReverseInterval(start, exclusifEnd, getFn); supported revert
+		var in = ofInterval(start, exclusifEnd, getFn);
+		var rev = in.reverseInterval(this::create);
+		assertEquals(in.getStart(), rev.getExclusifEnd());
+		assertEquals(in.getExclusifEnd(), rev.getStart());
+	}
+	
+
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testReverseOf(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+		var in = ofInterval(start, exclusifEnd, getFn);
+		var rev = in.reverseInterval();
+		
+		assertTrue(in.reverseOf(rev));
+		assertTrue(rev.reverseOf(in));
+		
+		assertFalse(in.reverseOf(in));
+		assertFalse(in.reverseOf(rev.shift(1, 0)));
+		assertFalse(in.reverseOf(rev.shift(0, 1)));
+
+		assertFalse(rev.reverseOf(rev));
+		assertFalse(rev.reverseOf(in.shift(1, 0)));
+		assertFalse(rev.reverseOf(in.shift(0, 1)));
 	}
 	
 	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected) {

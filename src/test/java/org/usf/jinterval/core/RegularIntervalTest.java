@@ -97,7 +97,7 @@ class RegularIntervalTest implements IntervalFactory {
 	<T extends Comparable<? super T>> void testReverseInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
-		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.reverseInterval(), "cannot reverse regular interval");
+		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.reverseInterval(), "not supported in a regular interval");
 	}
 	
 	@ParameterizedTest(name="[{0}, {1}[")
@@ -105,7 +105,7 @@ class RegularIntervalTest implements IntervalFactory {
 	<T extends Comparable<? super T>> void testSymmetrical(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
-		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.symmetrical(in), "cannot reverse regular interval");
+		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.symmetrical(in), "not supported in a regular interval");
 	}
 
 	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){

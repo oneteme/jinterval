@@ -102,10 +102,10 @@ class RegularIntervalTest implements IntervalFactory {
 	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testReverseOf(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+	<T extends Comparable<? super T>> void testSymmetrical(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
-		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.reverseOf(in), "cannot reverse regular interval");
+		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.symmetrical(in), "cannot reverse regular interval");
 	}
 
 	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){

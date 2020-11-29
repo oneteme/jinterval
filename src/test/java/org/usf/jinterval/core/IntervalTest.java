@@ -124,20 +124,20 @@ class IntervalTest extends RegularIntervalTest {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testReverseOf(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+	<T extends Comparable<? super T>> void testSymmetrical(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		var in = ofInterval(start, exclusifEnd, getFn);
 		var rev = in.reverseInterval();
 		
-		assertTrue(in.reverseOf(rev));
-		assertTrue(rev.reverseOf(in));
+		assertTrue(in.symmetrical(rev));
+		assertTrue(rev.symmetrical(in));
 		
-		assertFalse(in.reverseOf(in));
-		assertFalse(in.reverseOf(rev.shift(1, 0)));
-		assertFalse(in.reverseOf(rev.shift(0, 1)));
+		assertFalse(in.symmetrical(in));
+		assertFalse(in.symmetrical(rev.shift(1, 0)));
+		assertFalse(in.symmetrical(rev.shift(0, 1)));
 
-		assertFalse(rev.reverseOf(rev));
-		assertFalse(rev.reverseOf(in.shift(1, 0)));
-		assertFalse(rev.reverseOf(in.shift(0, 1)));
+		assertFalse(rev.symmetrical(rev));
+		assertFalse(rev.symmetrical(in.shift(1, 0)));
+		assertFalse(rev.symmetrical(in.shift(0, 1)));
 	}
 	
 	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected) {

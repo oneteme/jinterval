@@ -15,14 +15,6 @@ final class ImmutableIntervalTest extends IntervalTest {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testToString(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {//increase test cov
-
-		var in = ofInterval(start, exclusifEnd, getFn);
-		assertEquals("[" + in.getStart() + ", " + in.getExclusifEnd() + "[", in.toString());
-	}
-	
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testReverseInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
 
 		var val = create(start, exclusifEnd);
@@ -61,11 +53,19 @@ final class ImmutableIntervalTest extends IntervalTest {
 		
 		Set<Interval<T>> intervals = new HashSet<Interval<T>>();
 		intervals.add(in);
-		intervals.add(in);//same
-		intervals.add(create(start, exclusifEnd));//equals
+		intervals.add(in);//same object
+		intervals.add(create(start, exclusifEnd));//equals object
 		assertEquals(1, intervals.size());
-		intervals.add(create(exclusifEnd, start));
+		intervals.add(create(exclusifEnd, start));//invert object
 		assertEquals(2, intervals.size());
+	}
+	
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testToString(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {//increase test cov
+
+		var in = ofInterval(start, exclusifEnd, getFn);
+		assertEquals("[" + in.getStart() + ", " + in.getExclusifEnd() + "[", in.toString());
 	}
 	
 	@Override

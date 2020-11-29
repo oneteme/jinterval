@@ -19,7 +19,7 @@ public interface RegularInterval<T extends Comparable<? super T>> extends Interv
 	}
 
 	@Override
-	default boolean reverseOf(Interval<T> interval) {
+	default boolean symmetrical(Interval<T> interval) {
 		throw new UnsupportedOperationException("cannot reverse regular interval");
 	}
 	

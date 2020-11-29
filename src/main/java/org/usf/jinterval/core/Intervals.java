@@ -26,11 +26,6 @@ public final class Intervals {
 				&& Objects.equals(a.getExclusifEnd(), b.getExclusifEnd());
 	}
 
-	public static boolean symmetric(Interval<?> a, Interval<?> b) {// start & end cannot be null
-		return Objects.equals(a.getStart(), b.getExclusifEnd()) 
-				&& Objects.equals(a.getExclusifEnd(), b.getStart());
-	}
-
 	public static String toString(int start, int exclusifEnd){
 		return "[" + start + ", " + exclusifEnd  + "[";
 	}

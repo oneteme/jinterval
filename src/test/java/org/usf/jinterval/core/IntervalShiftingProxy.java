@@ -75,8 +75,8 @@ final class IntervalShiftingProxy<T extends Comparable<? super T>> implements In
 	public <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
 		return interval.reverseInterval(fn);
 	}
-	public boolean reverseOf(Interval<T> val) {
-		return interval.reverseOf(val);
+	public boolean symmetrical(Interval<T> val) {
+		return interval.symmetrical(val);
 	}
 	public boolean equals(Object obj) {
 		return interval.equals(obj);

@@ -24,7 +24,7 @@ public interface Interval<T extends Comparable<? super T>> {
 	
 	default boolean containsInterval(T start, T exclusifEnd) {
 
-		return containsInterval(start, exclusifEnd, ()-> Intervals.direction(start, exclusifEnd));
+		return containsInterval(start, exclusifEnd, ()-> Interval.direction(start, exclusifEnd));
 	}
 
 	private boolean containsInterval(T start, T exclusifEnd, IntSupplier dirSupp) {
@@ -48,7 +48,7 @@ public interface Interval<T extends Comparable<? super T>> {
 	
 	default boolean intersectInterval(T start, T exclusifEnd) {
 
-		return intersectInterval(start, exclusifEnd, ()-> Intervals.direction(start, exclusifEnd));
+		return intersectInterval(start, exclusifEnd, ()-> Interval.direction(start, exclusifEnd));
 	}
 
 	private boolean intersectInterval(T start, T exclusifEnd, IntSupplier dirSupp) {
@@ -73,7 +73,7 @@ public interface Interval<T extends Comparable<? super T>> {
 		return direction() > 0;
 	}
 
-	default <I extends Interval<T>> I reverseInterval(BiFunction<T, T, I> fn) {
+	default <I extends Interval<T>> I reverseInterval(BiFunction<? super T, ? super T, I> fn) {
 		return fn.apply(getExclusifEnd(), getStart());
 	}
 	
@@ -83,6 +83,11 @@ public interface Interval<T extends Comparable<? super T>> {
 	}
 	
 	default int direction() {
-		return Intervals.direction(getStart(), getExclusifEnd());
+		return Interval.direction(getStart(), getExclusifEnd());
+	}
+
+	static <T extends Comparable<? super T>> int direction(T start, T exclusifEnd) {
+		
+		return exclusifEnd.compareTo(start);
 	}
 }

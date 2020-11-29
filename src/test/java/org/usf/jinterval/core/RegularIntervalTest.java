@@ -108,6 +108,7 @@ class RegularIntervalTest implements IntervalFactory {
 		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.symmetrical(in), "not supported in a regular interval");
 	}
 
+	@Override
 	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
 		
 		return new RegularInterval<T>() {

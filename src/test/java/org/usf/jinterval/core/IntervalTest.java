@@ -185,6 +185,7 @@ class IntervalTest extends RegularIntervalTest {
 	    );
 	}
 
+	@Override
 	public <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd){
 		
 		return new Interval<T>() {

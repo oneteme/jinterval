@@ -20,7 +20,7 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	private static final IntPredicate MISSING_INTERVALS_FILTER = i-> i == 0;
 	private static final IntPredicate OVERLAP_INTERVALS_FILTER = i-> i > 1;
-	private static final IntPredicate UNLINKED_INTERVALS_FILTER = i-> i != 1;
+	private static final IntPredicate DIRTY_INTERVALS_FILTER   = i-> i != 1;
 	
 	private final List<? extends Interval<T>> intervals;
 	
@@ -62,21 +62,21 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	public boolean isLinkedIntervals() {
 		
-		return !testIf(null, null, UNLINKED_INTERVALS_FILTER);
+		return !testIf(null, null, DIRTY_INTERVALS_FILTER);
 	}
 	public boolean isLinkedIntervals(T start, T exclusifEnd) {
 		
-		return !testIf(start, exclusifEnd, UNLINKED_INTERVALS_FILTER);
+		return !testIf(start, exclusifEnd, DIRTY_INTERVALS_FILTER);
 	}
 
 	public void requiredLinkedIntervals() {
 
-		throwsIf(null, null, UNLINKED_INTERVALS_FILTER);
+		throwsIf(null, null, DIRTY_INTERVALS_FILTER);
 	}
 
 	public void requiredLinkedIntervals(T start, T exclusifEnd) {
 
-		throwsIf(start, exclusifEnd, UNLINKED_INTERVALS_FILTER);
+		throwsIf(start, exclusifEnd, DIRTY_INTERVALS_FILTER);
 	}
 
 
@@ -96,11 +96,11 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	public List<Interval<T>> dirtyIntervals() {
 
-		return filter(null, null, UNLINKED_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
+		return filter(null, null, DIRTY_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	public List<Interval<T>> dirtyIntervals(T start, T exclusifEnd) {
 
-		return filter(start, exclusifEnd, UNLINKED_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
+		return filter(start, exclusifEnd, DIRTY_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	
 	public <I extends Interval<T>, R> R collectMissingIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
@@ -119,11 +119,11 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 
 	public <I extends Interval<T>, R> R collectDirtyIntervals(BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
 
-		return filter(null, null, UNLINKED_INTERVALS_FILTER, fn, collector);
+		return filter(null, null, DIRTY_INTERVALS_FILTER, fn, collector);
 	}
 	public <I extends Interval<T>, R> R collectDirtyIntervals(T start, T exclusifEnd, BiFunction<T, T, I> fn, Collector<I, ?, R> collector) {
 
-		return filter(start, exclusifEnd, UNLINKED_INTERVALS_FILTER, fn, collector);
+		return filter(start, exclusifEnd, DIRTY_INTERVALS_FILTER, fn, collector);
 	}
 
 	public <I extends Interval<T>, C, R> R filter(T start, T exclusifEnd, IntPredicate intervalCount, BiFunction<T, T, I> fn, Collector<I, C, R> collector) {

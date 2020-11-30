@@ -2,6 +2,7 @@ package org.usf.jinterval.partition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -10,12 +11,19 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.usf.jinterval.core.exception.MissingIntervalException;
+import org.usf.jinterval.core.exception.OverlapIntervalException;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
 public class MultiModelPartition<P, T> {
+	
+	private static final IntPredicate EMPTY_PARTTTION_FILTER = i-> i == 0;
+	private static final IntPredicate SINGLE_MODEL_PARTITION_FILTER = i-> i == 1;
+	private static final IntPredicate MULTI_MODEL_PARTITION_FILTER   = i-> i > 1;
 	
 	private final List<MultiModelPart<P, ?, T>> partitions;
 	
@@ -47,19 +55,20 @@ public class MultiModelPartition<P, T> {
 		partitions.forEach(p-> p.accept(identity, fn, consumer));
 	}
 
-	public MultiModelPartition<P,T> filterEmptyModelPartitions() {
+	
+	public MultiModelPartition<P,T> emptyPartitions() {
 
-		return filterPartitions(s-> s == 0);
+		return filterPartitions(EMPTY_PARTTTION_FILTER);
 	}
 	
-	public MultiModelPartition<P,T> filterSingleModelPartitions() {
+	public MultiModelPartition<P,T> singleModelPartitions() {
 
-		return filterPartitions(s-> s == 1);
+		return filterPartitions(SINGLE_MODEL_PARTITION_FILTER);
 	}
 	
-	public MultiModelPartition<P,T> filterMultiModelPartitions() {
+	public MultiModelPartition<P,T> multiModelPartitions() {
 
-		return filterPartitions(s-> s > 1);
+		return filterPartitions(MULTI_MODEL_PARTITION_FILTER);
 	}
 	
 	public MultiModelPartition<P,T> filterPartitions(IntPredicate modelSizePredicate) {
@@ -68,17 +77,24 @@ public class MultiModelPartition<P, T> {
 				.collect(Collectors.toList()));
 	}
 	
-	public MultiModelPartition<P,T> requiredNotEmptyModelPartitions(){
-		return requiredEmpty(s-> s == 0);
+	public MultiModelPartition<P,T> requiredNotEmptyPartitions(){
+		return requiredEmpty(EMPTY_PARTTTION_FILTER);
 	}
 	
 	public MultiModelPartition<P,T> requiredSingleModelPartitions(){
-		return requiredEmpty(s-> s != 1);
+		return requiredEmpty(SINGLE_MODEL_PARTITION_FILTER.negate());
 	}
 
+//	public MultiModelPartition<P,T> requiredMultiModelPartitions(){
+//		return requiredEmpty(MULTI_MODEL_PARTITION_FILTER.negate());
+//	}
+
 	private MultiModelPartition<P,T> requiredEmpty(IntPredicate sizePredicate){
-		if(filterPartitionList(sizePredicate).count() > 0) {
-			throw new IllegalArgumentException("");
+		var c = filterPartitionList(sizePredicate).findAny();
+		if(c.isPresent()) {
+			throw c.get().modelCount() == 0 
+					? new MissingIntervalException(c.get().getStart(), c.get().getExclusifEnd()) 
+					: new OverlapIntervalException(c.get().getStart(), c.get().getExclusifEnd());
 		}
 		return this;
 	}

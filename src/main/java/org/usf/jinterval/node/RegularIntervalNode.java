@@ -20,7 +20,7 @@ public final class RegularIntervalNode<M> extends Node<M>  {
 		this.exclusifEnd = requireNonNull(exclusifEnd);
 		this.duration = requireNonNull(start).until(exclusifEnd, SECONDS);
 		if(duration <= 0) {
-			throw new IllegalArgumentException("start > exclusifEnd");
+			throw new IllegalArgumentException("start >= exclusifEnd");
 		}
 	}
 	

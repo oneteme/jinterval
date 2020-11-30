@@ -1,6 +1,7 @@
 package org.usf.jinterval.util;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,13 @@ public final class Asserts {
 	}
 	
 	public static final int requirePositif(int v){
+
+		return requirePositif(v, ()-> "Positif value required");
+	}
+	
+	public static final int requirePositif(int v, Supplier<String> msg){
 		if(v <= 0) {
-			throw new IllegalArgumentException("Positif value required");
+			throw new IllegalArgumentException(msg.get());
 		}
 		return v;
 	}

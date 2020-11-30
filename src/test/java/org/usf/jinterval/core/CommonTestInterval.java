@@ -5,11 +5,11 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-abstract class CommonTestInterval implements IntervalFactory {
+interface CommonTestInterval extends IntervalFactory {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	final <T extends Comparable<? super T>> void testContainsField(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+	default <T extends Comparable<? super T>> void testContainsField(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
 
@@ -27,7 +27,7 @@ abstract class CommonTestInterval implements IntervalFactory {
 	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	final <T extends Comparable<? super T>> void testContainsInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+	default <T extends Comparable<? super T>> void testContainsInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
 		
@@ -57,7 +57,7 @@ abstract class CommonTestInterval implements IntervalFactory {
 	
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	final <T extends Comparable<? super T>> void testIntersectInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+	default <T extends Comparable<? super T>> void testIntersectInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
 		
@@ -83,20 +83,20 @@ abstract class CommonTestInterval implements IntervalFactory {
 		testIntersectInterval(in, in.shiftExclusifEnd(0, 0), true,  true);
 	}
 	
-	<T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected, boolean expectedR) {
+	default <T extends Comparable<? super T>> void testContainsField(IntervalShiftingProxy<T> ip, T field, boolean expected, boolean expectedR) {
 		
 		testContainsField(expected, ip, field);
 		testContainsField(expectedR, ip.reverseInterval(), field);
 	}
 	
-	<T extends Comparable<? super T>> void testContainsInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expectedR) {
+	default <T extends Comparable<? super T>> void testContainsInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expectedR) {
 		
 		testContainsInterval(expected, ip, interval);
 		testContainsInterval(expectedR, ip.reverseInterval(), interval);
 		testContainsInterval(expected && expectedR, ip, interval.reverseInterval());
 	}
 	
-	<T extends Comparable<? super T>> void testIntersectInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expextedR) {
+	default <T extends Comparable<? super T>> void testIntersectInterval(IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval, boolean expected, boolean expextedR) {
 		
 		testIntersectInterval(expected, ip, interval);
 		testIntersectInterval(expected, interval, ip);
@@ -108,15 +108,15 @@ abstract class CommonTestInterval implements IntervalFactory {
 		testIntersectInterval(true, interval.reverseInterval(), ip.reverseInterval());
 	}
 	
-	<T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
+	default <T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
 		throw new RuntimeException();
 	}
 	
-	<T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval){
+	default <T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval){
 		throw new RuntimeException();
 	}
 	
-	<T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval){
+	default <T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval){
 		throw new RuntimeException();
 	}
 }

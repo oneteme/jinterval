@@ -1,7 +1,5 @@
 package org.usf.jinterval.core;
 
-import java.util.Objects;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -17,8 +15,7 @@ public final class Intervals {
 	}
 	
 	public static boolean equals(Interval<?> a, Interval<?> b) {// start & end cannot be null
-		return Objects.equals(a.getStart(), b.getStart()) 
-				&& Objects.equals(a.getExclusifEnd(), b.getExclusifEnd());
+		return a == b || a != null && a.equals(b);
 	}
 
 	public static String toString(int start, int exclusifEnd){

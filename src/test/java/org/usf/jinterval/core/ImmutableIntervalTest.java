@@ -1,8 +1,6 @@
 package org.usf.jinterval.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +9,7 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-final class ImmutableIntervalTest extends IntervalTest {
+final class ImmutableIntervalTest extends IntervalTest implements CommonTestInterval2 {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
@@ -21,28 +19,6 @@ final class ImmutableIntervalTest extends IntervalTest {
 		var rev = val.reverseInterval();
 		assertEquals(val.getStart(), rev.getExclusifEnd());
 		assertEquals(val.getExclusifEnd(), rev.getStart());
-	}
-	
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testEquals(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
-
-		var in = ofInterval(start, exclusifEnd, getFn);
-		var val = create(start, exclusifEnd);
-
-		assertTrue(val.equals(val));
-		assertTrue(val.equals(in));
-		assertFalse(val.equals(null));
-		assertFalse(val.equals(val.reverseInterval()));
-		assertTrue(val.equals(val.reverseInterval().reverseInterval()));
-		
-		assertFalse(val.equals(start));
-		assertFalse(val.equals(exclusifEnd));
-		
-		assertFalse(val.equals(in.shift(0, 1)));
-		assertFalse(val.equals(in.shift(0, -1)));
-		assertFalse(val.equals(in.shift(1, 0)));
-		assertFalse(val.equals(in.shift(-1, 0)));
 	}
 	
 	@ParameterizedTest(name="[{0}, {1}[")
@@ -59,13 +35,25 @@ final class ImmutableIntervalTest extends IntervalTest {
 		intervals.add(create(exclusifEnd, start));//invert object
 		assertEquals(2, intervals.size());
 	}
-	
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testToString(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {//increase test cov
 
-		var in = ofInterval(start, exclusifEnd, getFn);
-		assertEquals("[" + in.getStart() + ", " + in.getExclusifEnd() + "[", in.toString());
+	@SuppressWarnings("unlikely-arg-type")
+	@Override
+	public <T extends Comparable<? super T>> void testEquals(boolean expected, Interval<T> ip, Interval<T> interval) {
+		if(ip != null) {
+			assertEquals(expected, ip.equals(interval));
+			assertEquals(false, ip.equals(ip.getStart())); //instanceOf
+			assertEquals(false, ip.equals(ip.getExclusifEnd())); //instanceOf
+		}
+		if(interval != null) {
+			assertEquals(expected, interval.equals(ip));
+			assertEquals(false, interval.equals(interval.getStart())); //instanceOf
+			assertEquals(false, interval.equals(interval.getExclusifEnd())); //instanceOf
+		}
+	}
+	
+	@Override
+	public <T extends Comparable<? super T>> void testToString(String expected, Interval<T> ip) {
+		assertEquals(expected, ip.toString());
 	}
 	
 	@Override

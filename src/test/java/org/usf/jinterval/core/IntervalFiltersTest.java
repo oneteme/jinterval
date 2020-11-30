@@ -2,10 +2,10 @@ package org.usf.jinterval.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-final class IntervalFiltersTest extends CommonTestInterval  {
+final class IntervalFiltersTest implements CommonTestInterval  {
 	
 	@Override //test in / out
-	<T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
+	public <T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
 
 		assertEquals(expected, IntervalFilters.in(ip).test(field));
 		assertEquals(expected, IntervalFilters.in(ip.getStart(), ip.getExclusifEnd()).test(field));
@@ -15,7 +15,7 @@ final class IntervalFiltersTest extends CommonTestInterval  {
 	}
 
 	@Override //test contains / inside
-	<T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
+	public <T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
 		
 		assertEquals(expected, IntervalFilters.contains(interval).test(ip));
 		assertEquals(expected, IntervalFilters.contains(interval.getStart(), interval.getExclusifEnd()).test(ip));
@@ -25,7 +25,7 @@ final class IntervalFiltersTest extends CommonTestInterval  {
 	}
 
 	@Override //test intersect / diverge
-	<T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
+	public <T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
 
 		assertEquals(expected, IntervalFilters.intersect(interval).test(ip));
 		assertEquals(expected, IntervalFilters.intersect(interval.getStart(), interval.getExclusifEnd()).test(ip));

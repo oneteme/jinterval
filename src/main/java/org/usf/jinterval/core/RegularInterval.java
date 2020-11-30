@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 
 public interface RegularInterval<T extends Comparable<? super T>> extends Interval<T> {
 
+	
 	@Override
 	default <I extends Interval<T>> I reverseInterval(BiFunction<? super T, ? super T, I> fn) {
 		throw new UnsupportedOperationException("not supported in a regular interval");

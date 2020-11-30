@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class IntervalTest extends CommonTestInterval {
+class IntervalTest implements CommonTestInterval {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
@@ -61,20 +61,20 @@ class IntervalTest extends CommonTestInterval {
 	}
 	
 	@Override
-	<T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
+	public <T extends Comparable<? super T>> void testContainsField(boolean expected, IntervalShiftingProxy<T> ip, T field) {
 		
 		assertEquals(expected, ip.containsField(field));
 	}
 
 	@Override
-	<T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
+	public <T extends Comparable<? super T>> void testContainsInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
 
 		assertEquals(expected, ip.containsInterval(interval));
 		assertEquals(expected, ip.containsInterval(interval.getStart(), interval.getExclusifEnd()));
 	}
 
 	@Override
-	<T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
+	public <T extends Comparable<? super T>> void testIntersectInterval(boolean expected, IntervalShiftingProxy<T> ip, IntervalShiftingProxy<T> interval) {
 		
 		assertEquals(expected, ip.intersectInterval(interval));
 		assertEquals(expected, ip.intersectInterval(interval.getStart(), interval.getExclusifEnd()));

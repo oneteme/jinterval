@@ -2,7 +2,6 @@ package org.usf.jinterval.partition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -10,9 +9,6 @@ import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.usf.jinterval.core.exception.MissingIntervalException;
-import org.usf.jinterval.core.exception.OverlapIntervalException;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -85,16 +81,11 @@ public class MultiModelPartition<P, T> {
 		return requiredEmpty(SINGLE_MODEL_PARTITION_FILTER.negate());
 	}
 
-//	public MultiModelPartition<P,T> requiredMultiModelPartitions(){
-//		return requiredEmpty(MULTI_MODEL_PARTITION_FILTER.negate());
-//	}
-
-	private MultiModelPartition<P,T> requiredEmpty(IntPredicate sizePredicate){
-		var c = filterPartitionList(sizePredicate).findAny();
-		if(c.isPresent()) {
-			throw c.get().modelCount() == 0 
-					? new MissingIntervalException(c.get().getStart(), c.get().getExclusifEnd()) 
-					: new OverlapIntervalException(c.get().getStart(), c.get().getExclusifEnd());
+	public MultiModelPartition<P,T> requiredEmpty(IntPredicate nPartitionModel){
+		var p = filterPartitionList(nPartitionModel).findAny();
+		if(p.isPresent()) {
+			MultiModelPart<P, ?, T> part = p.get();
+			throw new MismatchPartition(part.getStart(), part.getExclusifEnd(), part.modelCount()) ;
 		}
 		return this;
 	}

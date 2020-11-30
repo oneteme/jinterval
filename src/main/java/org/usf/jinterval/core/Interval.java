@@ -16,7 +16,7 @@ public interface Interval<T extends Comparable<? super T>> {
 				? getStart().compareTo(temporal) <= 0 && getExclusifEnd().compareTo(temporal) > 0
 				: getStart().compareTo(temporal) <= 0 || getExclusifEnd().compareTo(temporal) > 0);
 	}
-	
+
 	default boolean containsInterval(Interval<T> p) {
 
 		return containsInterval(p.getStart(), p.getExclusifEnd(), p::direction);

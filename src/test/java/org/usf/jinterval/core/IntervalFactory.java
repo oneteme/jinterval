@@ -24,16 +24,17 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.params.provider.Arguments;
 
-public interface IntervalFactory {
+interface IntervalFactory {	
+	
+
+	abstract <T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd);
+	
 	
 	default <T extends Comparable<? super T>> IntervalShiftingProxy<T> ofInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn){
 		
 		return new IntervalShiftingProxy<>(create(start, exclusifEnd), this::create, getFn);
 	}
 	
-	<T extends Comparable<? super T>> Interval<T> create(T start, T exclusifEnd);
-	
-
 	static Stream<Arguments> numberIntervals() {
 	    return Stream.of(
     		Arguments.arguments(1, 5, shiftInt),

@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-final class IntervalsTest implements IntervalFactory, CommonTestInterval2 {
+final class IntervalsTest implements CommonTestInterval2 {
 
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})

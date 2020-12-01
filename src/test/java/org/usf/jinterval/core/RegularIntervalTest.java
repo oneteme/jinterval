@@ -1,5 +1,6 @@
 package org.usf.jinterval.core;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,6 +43,15 @@ class RegularIntervalTest implements CommonTestInterval {
 		
 		var in = ofInterval(start, exclusifEnd, getFn);
 		assertExceptionMsg(UnsupportedOperationException.class, ()-> in.symmetrical(in), "not supported in a regular interval");
+	}
+	
+	
+	@ParameterizedTest(name="[{0}, {1}[")
+	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
+	<T extends Comparable<? super T>> void testRequiredRegularInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+		
+		assertDoesNotThrow(()-> RegularInterval.requiredRegularInterval(start, exclusifEnd));
+		assertExceptionMsg(IllegalArgumentException.class, ()-> RegularInterval.requiredRegularInterval(exclusifEnd, start), "regular interval is required");
 	}
 	
 	@Override

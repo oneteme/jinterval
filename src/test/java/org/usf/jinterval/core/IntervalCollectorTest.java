@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class IntervalCollectorTest implements IntervalFactory {
 
-	@SuppressWarnings("unchecked")
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testMaxInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
@@ -38,7 +37,6 @@ class IntervalCollectorTest implements IntervalFactory {
 		testMaxInterval(Optional.of(in.shift(0, 1)), in, in.shiftExclusifEnd(0, 1));
 	}
 	
-	@SuppressWarnings("unchecked")
 	@ParameterizedTest(name="[{0}, {1}[")
 	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
 	<T extends Comparable<? super T>> void testMinInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
@@ -64,6 +62,7 @@ class IntervalCollectorTest implements IntervalFactory {
 		testMinInterval(Optional.empty(), in, in.shiftExclusifEnd(0, 1));
 	}
 	
+	@SafeVarargs
 	private <T extends Comparable<? super T>> void testMaxInterval(Optional<Interval<T>> expected, Interval<T>... arr) {
 		
 		var list = Arrays.asList(arr);
@@ -72,6 +71,7 @@ class IntervalCollectorTest implements IntervalFactory {
 		assertEquals(expected, list.stream().collect(IntervalCollector.maxInterval()));
 	}
 
+	@SafeVarargs
 	private <T extends Comparable<? super T>> void testMinInterval(Optional<Interval<T>> expected, Interval<T>... arr) {
 		
 		var list = Arrays.asList(arr);

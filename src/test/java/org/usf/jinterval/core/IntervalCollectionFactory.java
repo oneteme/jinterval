@@ -21,7 +21,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-interface IntervalCollectionFactory {
+public interface IntervalCollectionFactory {
 
 	static Stream<Arguments> dayOfWeek() {
 
@@ -110,12 +110,12 @@ interface IntervalCollectionFactory {
 	@RequiredArgsConstructor
 	static class IntervalCollectionTestCase<T extends Comparable<? super T>> {
 
-		final boolean cyclic;
-		Interval<T> min;
-		Interval<T> max;
-		final List<Interval<T>> intervals;
-		final List<Interval<T>> missing;
-		final List<Interval<T>> overlap;
+		public final boolean cyclic;
+		public Interval<T> min;
+		public Interval<T> max;
+		public final List<Interval<T>> intervals;
+		public final List<Interval<T>> missing;
+		public final List<Interval<T>> overlap;
 		
 		boolean missingFirst() {
 			return overlap.isEmpty() 

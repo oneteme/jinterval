@@ -1,7 +1,7 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.usf.jinterval.node.RegularIntervalNode.DEFAULT_ZONE_ID;
+import static org.usf.jinterval.partition.single.RegularIntervalNode.DEFAULT_ZONE_ID;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;

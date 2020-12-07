@@ -1,4 +1,4 @@
-package org.usf.jinterval.partition;
+package org.usf.jinterval.partition.multiple;
 
 import lombok.Getter;
 

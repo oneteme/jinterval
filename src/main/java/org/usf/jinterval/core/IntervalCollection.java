@@ -1,6 +1,6 @@
 package org.usf.jinterval.core;
 
-import static org.usf.jinterval.partition.Partitions.intervalParts;
+import static org.usf.jinterval.partition.multiple.Partitions.intervalParts;
 
 import java.util.List;
 import java.util.Optional;

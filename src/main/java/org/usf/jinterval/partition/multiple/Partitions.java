@@ -1,4 +1,4 @@
-package org.usf.jinterval.partition;
+package org.usf.jinterval.partition.multiple;
 
 import static org.usf.jinterval.util.CollectionUtils.requiredSameField;
 import static org.usf.jinterval.util.CollectionUtils.requiredSameIntField;
@@ -20,7 +20,7 @@ import org.usf.jinterval.core.HasTemporalUnit;
 import org.usf.jinterval.core.Interval;
 import org.usf.jinterval.core.RegularInterval;
 import org.usf.jinterval.core.Serie;
-import org.usf.jinterval.partition.MultiModelPart.ObjIntFunction;
+import org.usf.jinterval.partition.multiple.MultiModelPart.ObjIntFunction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

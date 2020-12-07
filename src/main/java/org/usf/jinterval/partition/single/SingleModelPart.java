@@ -1,4 +1,4 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import static java.util.Comparator.comparingInt;
 

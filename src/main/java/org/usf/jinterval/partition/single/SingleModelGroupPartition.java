@@ -1,4 +1,4 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import java.time.Instant;
 import java.util.List;

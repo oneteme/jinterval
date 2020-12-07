@@ -1,4 +1,4 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import java.util.Arrays;
 import java.util.List;

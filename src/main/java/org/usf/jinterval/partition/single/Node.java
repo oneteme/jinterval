@@ -1,10 +1,10 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static org.usf.jinterval.node.SingleModelPart.PARTITON_COMPARATOR;
-import static org.usf.jinterval.node.SingleModelPart.assign;
+import static org.usf.jinterval.partition.single.SingleModelPart.PARTITON_COMPARATOR;
+import static org.usf.jinterval.partition.single.SingleModelPart.assign;
 import static org.usf.jinterval.util.CollectionUtils.notNullOrEmpty;
 
 import java.time.ZonedDateTime;

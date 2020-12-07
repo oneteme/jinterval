@@ -1,4 +1,4 @@
-package org.usf.jinterval.node;
+package org.usf.jinterval.partition.single;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Objects.requireNonNull;

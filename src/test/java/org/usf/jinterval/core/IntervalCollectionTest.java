@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,6 +17,40 @@ import org.usf.jinterval.core.exception.MissingIntervalException;
 import org.usf.jinterval.core.exception.OverlapIntervalException;
 
 class IntervalCollectionTest implements IntervalCollectionFactory {
+	
+	@ParameterizedTest()
+	@MethodSource({"dayOfWeek", "localDate"})
+	<T extends Comparable<? super T>> void testMaxInterval(IntervalCollectionTestCase<T> tc) {
+
+		var c = new IntervalCollection<>(tc.cyclic, tc.intervals);
+		if(tc.cyclic) {
+			Utils.assertExceptionMsg(UnsupportedOperationException.class, ()-> c.maxInterval(), null);
+		}
+		else {
+			Optional<Interval<T>> v = assertDoesNotThrow(()-> c.maxInterval());
+			assertEquals(tc.max == null, v.isEmpty());
+			if(tc.max != null) {
+				assertEquals(tc.max, v.get());
+			}
+		}
+	}
+	
+	@ParameterizedTest()
+	@MethodSource({"dayOfWeek", "localDate"})
+	<T extends Comparable<? super T>> void testMinInterval(IntervalCollectionTestCase<T> tc) {
+
+		var c = new IntervalCollection<>(tc.cyclic, tc.intervals);
+		if(tc.cyclic) {
+			Utils.assertExceptionMsg(UnsupportedOperationException.class, ()-> c.minInterval(), null);
+		}
+		else {
+			Optional<Interval<T>> v = assertDoesNotThrow(()-> c.minInterval());
+			assertEquals(tc.min == null, v.isEmpty());
+			if(tc.min != null) {
+				assertEquals(tc.min, v.get());
+			}
+		}
+	}
 
 	@ParameterizedTest()
 	@MethodSource({"dayOfWeek", "localDate"})

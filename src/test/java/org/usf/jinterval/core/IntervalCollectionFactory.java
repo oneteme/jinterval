@@ -1,6 +1,7 @@
 package org.usf.jinterval.core;
 
-import static java.time.DayOfWeek.*;
+import static java.time.DayOfWeek.FRIDAY;
+import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.time.DayOfWeek.THURSDAY;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.params.provider.Arguments;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 interface IntervalCollectionFactory {
@@ -62,8 +64,6 @@ interface IntervalCollectionFactory {
 	    	
 	    	).map( Arguments::arguments);
 	}
-	
-
 
 	static Stream<Arguments> localDate() {
 		
@@ -77,27 +77,27 @@ interface IntervalCollectionFactory {
 					Collections.emptyList(), 
 					Collections.emptyList()),
 	
-			new IntervalCollectionTestCase<LocalDate>(false,
+			new IntervalCollectionTestCase<LocalDate>(false, of(min, max), of(min, max),
 					Arrays.asList(of(min, max)), 
 					Collections.emptyList(), 
 					Collections.emptyList()),
 
-			new IntervalCollectionTestCase<LocalDate>(false,
+			new IntervalCollectionTestCase<LocalDate>(false, of(min, max), of(min, max),
 					Arrays.asList(of(min, max), of(min, max)), 
 					Collections.emptyList(),
 					Arrays.asList(of(min, max))),
 		
-			new IntervalCollectionTestCase<LocalDate>(false,
+			new IntervalCollectionTestCase<LocalDate>(false, null, of(min, max),
 					Arrays.asList(of(min, LocalDate.of(2020, 01, 15)), of(LocalDate.of(2020, 01, 20), max)), 
 					Arrays.asList(of(LocalDate.of(2020, 01, 15), LocalDate.of(2020, 01, 20))),
 					Collections.emptyList()),
 
-			new IntervalCollectionTestCase<LocalDate>(false,
+			new IntervalCollectionTestCase<LocalDate>(false, of(LocalDate.of(2020, 01, 10), LocalDate.of(2020, 01, 15)), of(min, max),
 					Arrays.asList(of(min, LocalDate.of(2020, 01, 15)), of(LocalDate.of(2020, 01, 10), max)), 
 					Collections.emptyList(),
 			Arrays.asList(of(LocalDate.of(2020, 01, 10), LocalDate.of(2020, 01, 15)))),
 			
-			new IntervalCollectionTestCase<LocalDate>(false,
+			new IntervalCollectionTestCase<LocalDate>(false, null, of(min, LocalDate.of(2020, 02, 05)),
 					Arrays.asList(of(min, LocalDate.of(2020, 01, 15)), of(LocalDate.of(2020, 01, 20), max), of(LocalDate.of(2020, 01, 17), LocalDate.of(2020, 02, 05))), 
 					Arrays.asList(of(LocalDate.of(2020, 01, 15), LocalDate.of(2020, 01, 17))),
 					Arrays.asList(of(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 01, 31))))
@@ -106,10 +106,13 @@ interface IntervalCollectionFactory {
 	}
 	
 
+	@AllArgsConstructor
 	@RequiredArgsConstructor
 	static class IntervalCollectionTestCase<T extends Comparable<? super T>> {
 
 		final boolean cyclic;
+		Interval<T> min;
+		Interval<T> max;
 		final List<Interval<T>> intervals;
 		final List<Interval<T>> missing;
 		final List<Interval<T>> overlap;
@@ -119,6 +122,7 @@ interface IntervalCollectionFactory {
 					|| !missing.isEmpty() 
 					&& missing.get(0).getStart().compareTo(overlap.get(0).getStart()) < 0;
 		}
+		
 		@Override
 		public String toString() {
 			return intervals.toString();

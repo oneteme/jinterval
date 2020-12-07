@@ -27,9 +27,9 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof Interval<?> in 
+		return obj == this || (obj instanceof Interval<?> in 
 				&& start.equals(in.getStart())
-				&& exclusifEnd.equals(in.getExclusifEnd());
+				&& exclusifEnd.equals(in.getExclusifEnd()));
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ public final class Utils {
 		assertException(expectedType, executable, e-> assertEquals(expectedMessage, e.getMessage()));
 	}
 	
-	public static <E extends Exception> void assertException(Class<E> expectedType, Executable executable, Consumer<E> consumer) {
+	public static <E extends Exception> void assertException(Class<E> expectedType, Executable executable, Consumer<? super E> consumer) {
 
 		consumer.accept(assertThrows(expectedType, executable));
 	}

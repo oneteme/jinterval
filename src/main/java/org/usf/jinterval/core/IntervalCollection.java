@@ -22,13 +22,20 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	private static final IntPredicate OVERLAP_INTERVALS_FILTER = i-> i > 1;
 	private static final IntPredicate DIRTY_INTERVALS_FILTER   = i-> i != 1;
 	
+	private final boolean cyclic;
 	private final List<? extends Interval<T>> intervals;
 	
 	public Optional<Interval<T>> minInterval() {
+		if(cyclic) {
+			throw new UnsupportedOperationException();
+		}
 		return intervals.stream().collect(IntervalCollector.minInterval());
 	}
 
 	public Optional<Interval<T>> maxInterval() {
+		if(cyclic) {
+			throw new UnsupportedOperationException();
+		}
 		return intervals.stream().collect(IntervalCollector.maxInterval());
 	}
 	
@@ -94,11 +101,11 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 		return filter(null, null, OVERLAP_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
 	
-	public List<Interval<T>> dirtyIntervals() {
+	public List<Interval<T>> missingAndOverlapIntervals() {
 
 		return filter(null, null, DIRTY_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
-	public List<Interval<T>> dirtyIntervals(T start, T exclusifEnd) {
+	public List<Interval<T>> missingAndOverlapIntervals(T start, T exclusifEnd) {
 
 		return filter(start, exclusifEnd, DIRTY_INTERVALS_FILTER, ImmutableInterval::of, Collectors.toList());
 	}
@@ -135,7 +142,7 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	public void acceptIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate, BiConsumer<T,T> consumer) {
 
-		intervalParts(false, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
+		intervalParts(cyclic, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
 			if(nIntervalPredicate.test(indexs.length)) {
 				consumer.accept(sp, ep);
 			}
@@ -154,7 +161,7 @@ public final class IntervalCollection<T extends Comparable<? super T>> {
 	
 	private void throwsIf(T start, T exclusifEnd, IntPredicate nIntervalPredicate) {
 
-		intervalParts(false, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
+		intervalParts(cyclic, intervals, start, exclusifEnd, (sp, ep, indexs, min)->{
 			if(nIntervalPredicate.test(indexs.length)) {
 				throw indexs.length == 0 
 						? new MissingIntervalException(sp, ep) 

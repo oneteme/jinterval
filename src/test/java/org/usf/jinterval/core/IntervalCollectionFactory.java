@@ -71,11 +71,21 @@ interface IntervalCollectionFactory {
 		LocalDate max = LocalDate.of(2020, 1, 31);
 
 	    return Stream.of(
+
+			new IntervalCollectionTestCase<LocalDate>(false,
+					Arrays.asList(), 
+					Collections.emptyList(), 
+					Collections.emptyList()),
 	
 			new IntervalCollectionTestCase<LocalDate>(false,
 					Arrays.asList(of(min, max)), 
 					Collections.emptyList(), 
 					Collections.emptyList()),
+
+			new IntervalCollectionTestCase<LocalDate>(false,
+					Arrays.asList(of(min, max), of(min, max)), 
+					Collections.emptyList(),
+					Arrays.asList(of(min, max))),
 		
 			new IntervalCollectionTestCase<LocalDate>(false,
 					Arrays.asList(of(min, LocalDate.of(2020, 01, 15)), of(LocalDate.of(2020, 01, 20), max)), 

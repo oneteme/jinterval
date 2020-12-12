@@ -5,36 +5,49 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.function.ToLongBiFunction;
 
-public abstract class CyclicIntervalNode<M, T> extends Node<M> {
+import org.usf.jinterval.core.Interval;
+import org.usf.jinterval.core.Intervals;
+
+import lombok.Getter;
+
+@Getter
+public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> extends Node<M> implements Interval<T> {
 	
 	private final T start;
 	private final T exclusifEnd;
-	private final long duration;
+	private final int direction;
 
-	public CyclicIntervalNode(M model, T start, T exclusifEnd, ToLongBiFunction<T, T> durationFn, List<Node<M>> childrens) {//ZoneOffset ?
+	public CyclicIntervalNode(M model, T start, T exclusifEnd, List<Node<M>> childrens) {//ZoneOffset ?
 		super(model, childrens);
 		this.start = requireNonNull(start);
 		this.exclusifEnd = requireNonNull(exclusifEnd);
-		this.duration = requireNonNull(durationFn).applyAsLong(start, exclusifEnd);
+		this.direction = Interval.direction(start, exclusifEnd);
 	}
+
+	protected abstract ZonedDateTime adjustStart(ZonedDateTime zdt);
+	
+	protected abstract ZonedDateTime adjustExlusifEnd(ZonedDateTime zdt);
 	
 	@Override
 	protected long compareTo(ZonedDateTime zdt) {
-		if(duration > 0) {
-			ZonedDateTime zEnd = combine(zdt, exclusifEnd);
-			long v = zdt.until(zEnd, SECONDS);
-			return v > 0 ? v : zEnd.plusDays(1).minusSeconds(duration).until(zdt, SECONDS);
-		}
-		else if(duration < 0)  {
-			ZonedDateTime zStart = combine(zdt, start);
-			long v = zStart.until(zdt, SECONDS);
-			return v < 0 ? v : zStart.plusDays(1).plusSeconds(-duration).until(zdt, SECONDS);
+		if(direction != 0) {
+			long v = zdt.until(adjustStart(zdt), SECONDS);
+			if(v > 0) {
+				return -v;
+			}
+			v = zdt.until(adjustExlusifEnd(zdt), SECONDS);
+			if(v > 0) {
+				return v;
+			}
+			throw new RuntimeException("unreachable code");
 		}
 		return super.compareTo(zdt);//MAX
  	}
 	
-	protected abstract ZonedDateTime combine(ZonedDateTime zdt, T field);
+	@Override
+	public String toString() {
+		return getModel() + " : " + Intervals.toString(start, exclusifEnd);
+	}
 
 }

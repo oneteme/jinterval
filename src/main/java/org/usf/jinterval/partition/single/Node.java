@@ -48,11 +48,12 @@ public class Node<M> {
 		
 		List<SingleModelPart<M>> list = new LinkedList<>();
 		long diff = compareTo(date);
-		while(diff != 0) {
-			int loops = (int) (diff / step);
+		while(index < max && diff != 0) {
+			int ends = (int) (diff / step);
 			if(diff > 0) {
-				loops = Math.min(loops, max);
-				SingleModelPart<ZonedDateTime> context = new SingleModelPart<>(index, loops, date); //final reference
+
+				ends = Math.min(index+ends, max);
+				SingleModelPart<ZonedDateTime> context = new SingleModelPart<>(index, ends, date); //final reference
 				List<SingleModelPart<M>> childList = childrens.parallelStream() //parallel ?
 						.flatMap(n-> n.until(context.getModel(), context.getStart(), context.getExclusifEnd(), step).stream())
 						.sequential()
@@ -83,14 +84,14 @@ public class Node<M> {
 				}
 			}
 			else {
-				if(-loops > max) {
-					break;
+				if(index-ends > max) {
+					break; //optimization
 				}
 				diff = -diff;
-				loops = -loops;
+				ends = index-ends;
 			}
 			date = date.plus(diff, SECONDS); //jump to next
-			index += loops;
+			index = ends;
 			diff = compareTo(date);
 		}
 		return list;

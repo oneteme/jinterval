@@ -1,22 +1,36 @@
 package org.usf.jinterval.partition.single;
 
-import static org.usf.jinterval.partition.single.RegularIntervalNode.DEFAULT_ZONE_ID;
+import static java.time.temporal.TemporalAdjusters.next;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjuster;
 import java.util.List;
 
-public final class DayOfWeekIntervalNode<M> extends CyclicIntervalNode<M, Integer>  {
+public final class DayOfWeekIntervalNode<M> extends CyclicIntervalNode<M, DayOfWeek>  {
 
 	public DayOfWeekIntervalNode(M model, DayOfWeek start, DayOfWeek exclusifEnd, List<Node<M>> childrens) {
-		super(model, start.getValue(), exclusifEnd.getValue(), (s, e)-> e-s, childrens);
-	}
-	
-	@Override
-	protected ZonedDateTime combine(ZonedDateTime zdt, Integer field) {
-		return zdt.toLocalDate()
-				.plusDays(zdt.toLocalDate().getDayOfWeek().getValue() - field)
-				.atStartOfDay(DEFAULT_ZONE_ID);
+		super(model, start, exclusifEnd, childrens);
 	}
 
+	@Override
+	protected ZonedDateTime adjustStart(ZonedDateTime zdt) {
+		return adjust(zdt, containsField(zdt.toLocalDate().getDayOfWeek())
+				? previousOrSame(getStart()) 
+				: next(getStart()));
+	}
+
+	@Override
+	protected ZonedDateTime adjustExlusifEnd(ZonedDateTime zdt) {
+
+		return adjust(zdt, next(this.getExclusifEnd()));
+	}
+	
+	private ZonedDateTime adjust(ZonedDateTime zdt, TemporalAdjuster adj) {
+		
+		return zdt.with(adj).with(LocalTime.MIN);
+	}
+	
 }

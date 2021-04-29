@@ -1,52 +1,36 @@
 package org.usf.jinterval.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.function.BiFunction;
+import java.time.LocalDate;
+import java.util.Arrays;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
-final class IntervalsTest implements CommonTestInterval2 {
-
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void  testMax(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+class IntervalsTest {
+	
+	@Test
+	void testIsMissingIntervals() {
 		
-		assertEquals(exclusifEnd, Intervals.max(start, exclusifEnd));
-		assertEquals(exclusifEnd, Intervals.max(exclusifEnd, start));
-		assertNotEquals(start, Intervals.max(start, exclusifEnd));
-		assertNotEquals(start, Intervals.max(exclusifEnd, start));
-	}
-
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void  testMin(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
+		var v1 = Arrays.asList(interval(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 2)));
+		assertFalse(Intervals.isMissingIntervals(v1));
 		
-		assertEquals(start, Intervals.min(start, exclusifEnd));
-		assertEquals(start, Intervals.min(exclusifEnd, start));
-		assertNotEquals(exclusifEnd, Intervals.min(start, exclusifEnd));
-		assertNotEquals(exclusifEnd, Intervals.min(exclusifEnd, start));
+
+		var v2 = Arrays.asList(interval(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 10)), 
+				interval(LocalDate.of(2020, 1, 5), LocalDate.of(2020, 1, 20)));
+		assertFalse(Intervals.isMissingIntervals(v2));
+		
+
+		var v3 = Arrays.asList(interval(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 10)), 
+				interval(LocalDate.of(2020, 1, 15), LocalDate.of(2020, 1, 20)));
+		assertTrue(Intervals.isMissingIntervals(v3));
+		
 	}
 	
-	@Override
-	public <T extends Comparable<? super T>> void testEquals(boolean expected, Interval<T> ip, Interval<T> interval) {
-
-		assertEquals(expected, Intervals.equals(ip, interval));
-		assertEquals(expected, Intervals.equals(interval, ip));
-	}
-
-	@Override
-	public <T extends Comparable<? super T>> void testToString(String expected, Interval<T> ip) {
-
-		assertEquals(expected, Intervals.toString(ip));
-		assertEquals(expected, Intervals.toString(ip.getStart(), ip.getExclusifEnd()));
-	}
-
-	@Override
-	public <T extends Comparable<? super T>> ImmutableInterval<T> create(T start, T exclusifEnd) {
-		return ImmutableInterval.of(start, exclusifEnd);
+	private static <T extends Comparable<? super T>> Interval<T> interval(T start, T exludedEnd) {
+		
+		return new ImmutableInterval<T>(start, exludedEnd);
 	}
 
 }

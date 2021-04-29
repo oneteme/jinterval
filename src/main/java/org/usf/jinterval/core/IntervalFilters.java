@@ -15,7 +15,7 @@ public final class IntervalFilters {
 	
 	public static <T extends Comparable<? super T>> Predicate<T> in(T start, T exclusifEnd){
 
-		return ImmutableInterval.of(start, exclusifEnd)::containsField;
+		return new ImmutableInterval<>(start, exclusifEnd)::containsField;
 	}
 	
 	public static <T extends Comparable<? super T>> Predicate<T> out(Interval<T> interval){
@@ -35,7 +35,7 @@ public final class IntervalFilters {
 	
 	public static <T extends Comparable<? super T>, I extends Interval<T>> Predicate<I> inside(T start, T exclusifEnd){
 
-		return ImmutableInterval.of(start, exclusifEnd)::containsInterval;
+		return new ImmutableInterval<>(start, exclusifEnd)::containsInterval;
 	}
 	
 	public static <T extends Comparable<? super T>, I extends Interval<T>> Predicate<I> contains(Interval<T> interval){

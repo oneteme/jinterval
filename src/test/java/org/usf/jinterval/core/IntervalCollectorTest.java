@@ -1,87 +1,60 @@
 package org.usf.jinterval.core;
 
+import static java.time.Month.APRIL;
+import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.usf.jinterval.Utils.assertExceptionMsg;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
-class IntervalCollectorTest implements IntervalFactory {
+class IntervalCollectorTest  {
+	
+	@Test
+	void testLargestInterval() {
+		
+		Stream<Interval<Long>> s1 = Stream.empty();
+		assertEquals(s1.collect(IntervalCollector.largestInterval()), Optional.empty());
 
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testMaxInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
-
-		var in = ofInterval(start, exclusifEnd, getFn);
+		Stream<Interval<Month>> s2 = Stream.of(new ImmutableInterval<>(JANUARY, APRIL));
+		assertEquals(new ImmutableInterval<>(JANUARY, APRIL), s2.collect(IntervalCollector.largestInterval()).get());
 		
-		testMaxInterval(Optional.empty());
-		testMaxInterval(Optional.of(in), in);
-		testMaxInterval(Optional.of(in), in, in);
+		var s3 = Stream.of(
+				new ImmutableInterval<>(1, 5),
+				new ImmutableInterval<>(3, 7),
+				new ImmutableInterval<>(-2, 3));
+		assertEquals(new ImmutableInterval<>(-2, 7), s3.collect(IntervalCollector.largestInterval()).get());
 		
-		testMaxInterval(Optional.of(in), in, in.shift(1, 0));
-		testMaxInterval(Optional.of(in), in, in.shift(0, -1));
-		testMaxInterval(Optional.of(in), in, in.shift(1, -1));
-		
-		testMaxInterval(Optional.of(in.shift(-1, 0)), in, in.shift(-1, 0));
-		testMaxInterval(Optional.of(in.shift(0, 1)), in, in.shift(0, 1));
-		testMaxInterval(Optional.of(in.shift(-1, 1)), in, in.shift(-1, 1));
-		
-		testMaxInterval(Optional.of(in.shift(0, 1)), in, in.shift(1, 1));
-		testMaxInterval(Optional.of(in.shift(-1, 0)), in, in.shift(-1, -1));
-		
-		testMaxInterval(Optional.of(in.shift(-1, 0)), in, in.shiftStart(-1, 0));
-		testMaxInterval(Optional.of(in.shift(0, 1)), in, in.shiftExclusifEnd(0, 1));
+		Stream<ImmutableInterval<LocalTime>> s4 = Stream.of(new ImmutableInterval<>(LocalTime.of(22, 0), LocalTime.of(7, 0)));
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s4.collect(IntervalCollector.largestInterval()), "inverted interval");
 	}
 	
-	@ParameterizedTest(name="[{0}, {1}[")
-	@MethodSource({"numberIntervals", "temporalIntervals", "enumIntervals"})
-	<T extends Comparable<? super T>> void testMinInterval(T start, T exclusifEnd, BiFunction<T, Integer, T> getFn) {
-
-		var in = ofInterval(start, exclusifEnd, getFn);
+	@Test
+	void testSmallestInterval() {
 		
-		testMinInterval(Optional.empty());
-		testMinInterval(Optional.of(in), in);
-		testMinInterval(Optional.of(in), in, in);
+		Stream<Interval<Long>> s1 = Stream.empty();
+		assertEquals(Optional.empty(), s1.collect(IntervalCollector.smallestInterval()));
 
-		testMinInterval(Optional.of(in.shift(1, 0)), in, in.shift(1, 0));
-		testMinInterval(Optional.of(in.shift(0, -1)), in, in.shift(0, -1));
-		testMinInterval(Optional.of(in.shift(1, -1)), in, in.shift(1, -1));
+		Stream<Interval<Month>> s2 = Stream.of(new ImmutableInterval<>(JANUARY, APRIL));
+		assertEquals(new ImmutableInterval<>(JANUARY, APRIL), s2.collect(IntervalCollector.smallestInterval()).get());
 		
-		testMinInterval(Optional.of(in), in, in.shift(-1, 0));
-		testMinInterval(Optional.of(in), in, in.shift(0, 1));
-		testMinInterval(Optional.of(in), in, in.shift(-1, 1));
-
-		testMinInterval(Optional.of(in.shift(1, 0)), in, in.shift(1, 1));
-		testMinInterval(Optional.of(in.shift(0, -1)), in, in.shift(-1, -1));
-
-		testMinInterval(Optional.empty(), in, in.shiftStart(-1, 0));
-		testMinInterval(Optional.empty(), in, in.shiftExclusifEnd(0, 1));
+		var s3 = Stream.of(
+				new ImmutableInterval<>(2, 15),
+				new ImmutableInterval<>(4, 16),
+				new ImmutableInterval<>(-20, 5));
+		assertEquals(new ImmutableInterval<>(4, 5), s3.collect(IntervalCollector.smallestInterval()).get());
+		
+		var s4 = Stream.of(
+				new ImmutableInterval<>(Month.JANUARY, Month.MARCH),
+				new ImmutableInterval<>(Month.MARCH, Month.SEPTEMBER));
+		assertEquals(Optional.empty(), s4.collect(IntervalCollector.smallestInterval()));
+		
+		Stream<ImmutableInterval<LocalTime>> s5 = Stream.of(new ImmutableInterval<>(LocalTime.of(22, 0), LocalTime.of(7, 0)));
+		assertExceptionMsg(IllegalArgumentException.class, ()-> s5.collect(IntervalCollector.largestInterval()), "inverted interval");
 	}
 	
-	@SafeVarargs
-	private <T extends Comparable<? super T>> void testMaxInterval(Optional<Interval<T>> expected, Interval<T>... arr) {
-		
-		var list = Arrays.asList(arr);
-		assertEquals(expected, list.stream().collect(IntervalCollector.maxInterval()));
-		Collections.shuffle(list);
-		assertEquals(expected, list.stream().collect(IntervalCollector.maxInterval()));
-	}
-
-	@SafeVarargs
-	private <T extends Comparable<? super T>> void testMinInterval(Optional<Interval<T>> expected, Interval<T>... arr) {
-		
-		var list = Arrays.asList(arr);
-		assertEquals(expected, list.stream().collect(IntervalCollector.minInterval()));
-		Collections.shuffle(list);
-		assertEquals(expected, list.stream().collect(IntervalCollector.minInterval()));
-	}
-
-	@Override
-	public <T extends Comparable<? super T>> ImmutableInterval<T> create(T start, T exclusifEnd) {
-		return ImmutableInterval.of(start, exclusifEnd);
-	}
 }

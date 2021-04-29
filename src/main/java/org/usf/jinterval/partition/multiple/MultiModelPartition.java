@@ -1,12 +1,14 @@
 package org.usf.jinterval.partition.multiple;
 
+import static lombok.AccessLevel.PACKAGE;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntPredicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,83 +16,86 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class MultiModelPartition<P, T> {
+@RequiredArgsConstructor(access = PACKAGE)
+final class MultiModelPartition<T> {
 	
-	private static final IntPredicate EMPTY_PARTTTION_FILTER = i-> i == 0;
-	private static final IntPredicate SINGLE_MODEL_PARTITION_FILTER = i-> i == 1;
-	private static final IntPredicate MULTI_MODEL_PARTITION_FILTER   = i-> i > 1;
+	private static final IntPredicate EMPTY_MODEL_PART_FILTER  = i-> i == 0;
+	private static final IntPredicate SINGLE_MODEL_PART_FILTER = i-> i == 1;
+	private static final IntPredicate MULTI_MODEL_PART_FILTER  = i-> i > 1;
 	
-	private final List<MultiModelPart<P, ?, T>> partitions;
+	private final List<MultiModelPart<T>> partitions;
 	
 	public List<T> collect(BinaryOperator<T> op){
-		return collect(op, ArrayList::new);
-	}
-	
-	public List<T> collect(BinaryOperator<T> op, Supplier<List<T>> supplier){
-		List<T> list = supplier.get();
-		accept(op, list::add);
-		return list;
-	}
-	
-	public void accept(BinaryOperator<T> op, Consumer<T> consumer){
-		partitions.forEach(p-> p.accept(op, consumer));
-	}
-	
-	public <R> List<R> collect(R identity, BiFunction<R, T, R> fn){
-		return collect(identity, fn, ArrayList::new);
-	}
-	
-	public <R> List<R> collect(R identity, BiFunction<R, T, R> fn, Supplier<List<R>> supplier){
-		List<R> list = supplier.get();
-		accept(identity, fn, list::add);
-		return list;
-	}
-	
-	public <R> void accept(R identity, BiFunction<R, T, R> fn, Consumer<R> consumer){
-		partitions.forEach(p-> p.accept(identity, fn, consumer));
+		return partitions.stream()
+				.map(p-> p.reduce(op))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.collect(Collectors.toList());
 	}
 
-	
-	public MultiModelPartition<P,T> emptyPartitions() {
-
-		return filterPartitions(EMPTY_PARTTTION_FILTER);
+	public <R> List<R> collect(R identity, BiFunction<R, T, R> op){
+		return partitions.stream()
+				.map(p-> p.reduce(identity, op))
+				.collect(Collectors.toList());
 	}
 	
-	public MultiModelPartition<P,T> singleModelPartitions() {
-
-		return filterPartitions(SINGLE_MODEL_PARTITION_FILTER);
+	public <R> List<R> deepReduce(Function<T, List<R>> fn, BinaryOperator<R> op) {
+		List<R> arr = new ArrayList<>(deepSize());
+		partitions.forEach(p-> p.deepReduce(fn, op, arr::add));
+		return arr;
 	}
 	
-	public MultiModelPartition<P,T> multiModelPartitions() {
-
-		return filterPartitions(MULTI_MODEL_PARTITION_FILTER);
+	public <U, R> List<R> deepReduce(Function<T, List<U>> fn, R identity, BiFunction<R, U, R> op) {
+		List<R> arr = new ArrayList<>(deepSize());
+		partitions.forEach(p-> p.deepReduce(fn, identity, op, arr::add));
+		return arr;
 	}
 	
-	public MultiModelPartition<P,T> filterPartitions(IntPredicate modelSizePredicate) {
+	private int deepSize() {
+		return partitions.stream()
+				.mapToInt(p-> p.getExclusifEndIndex() - p.getStartIndex())
+				.sum();
+	}
+	
+	public MultiModelPartition<T> emptyPartitions() {
+
+		return filterPartitions(EMPTY_MODEL_PART_FILTER);
+	}
+	
+	public MultiModelPartition<T> singleModelPartitions() {
+
+		return filterPartitions(SINGLE_MODEL_PART_FILTER);
+	}
+	
+	public MultiModelPartition<T> multiModelPartitions() {
+
+		return filterPartitions(MULTI_MODEL_PART_FILTER);
+	}
+	
+	public MultiModelPartition<T> filterPartitions(IntPredicate modelSizePredicate) {
 
 		return new MultiModelPartition<>(filterPartitionList(modelSizePredicate)
 				.collect(Collectors.toList()));
 	}
 	
-	public MultiModelPartition<P,T> requiredNotEmptyPartitions(){
-		return requiredEmpty(EMPTY_PARTTTION_FILTER);
+	public MultiModelPartition<T> requiredNotEmptyPartitions(){
+		return requiredEmpty(EMPTY_MODEL_PART_FILTER);
 	}
 	
-	public MultiModelPartition<P,T> requiredSingleModelPartitions(){
-		return requiredEmpty(SINGLE_MODEL_PARTITION_FILTER.negate());
+	public MultiModelPartition<T> requiredSingleModelPartitions(){
+		return requiredEmpty(SINGLE_MODEL_PART_FILTER.negate());
 	}
 
-	public MultiModelPartition<P,T> requiredEmpty(IntPredicate nPartitionModel){
+	public MultiModelPartition<T> requiredEmpty(IntPredicate nPartitionModel){
 		var p = filterPartitionList(nPartitionModel).findAny();
 		if(p.isPresent()) {
-			MultiModelPart<P, ?, T> part = p.get();
-			throw new MismatchPartition(part.getStart(), part.getExclusifEnd(), part.modelCount()) ;
+			MultiModelPart<T> part = p.get();
+			throw new MismatchPartitionException(part.getStart(), part.getExclusifEnd(), part.getModel().size()) ;
 		}
 		return this;
 	}
 	
-	private Stream<? extends MultiModelPart<P,?,T>> filterPartitionList(IntPredicate modelSizePredicate) {
-		return partitions.stream().filter(p-> modelSizePredicate.test(p.modelCount()));
+	private Stream<MultiModelPart<T>> filterPartitionList(IntPredicate modelSizePredicate) {
+		return partitions.stream().filter(p-> modelSizePredicate.test(p.getModel().size()));
 	}
 }

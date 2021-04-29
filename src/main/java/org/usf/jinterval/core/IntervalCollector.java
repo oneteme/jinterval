@@ -2,6 +2,8 @@ package org.usf.jinterval.core;
 
 import static java.util.Collections.emptySet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -10,50 +12,52 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import org.usf.jinterval.core.IntervalCollector.SimpleInterval;
-
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IntervalCollector<T extends Comparable<? super T>> implements Collector<Interval<T>, SimpleInterval<T>, Optional<Interval<T>>>{
+public final class IntervalCollector<T extends Comparable<? super T>> implements Collector<Interval<T>, List<T>, Optional<Interval<T>>> {
 	
 	private final BinaryOperator<T> startOp;
 	private final BinaryOperator<T> exclusifEndOp;
 	
 	@Override
-	public Supplier<SimpleInterval<T>> supplier() {
-		return SimpleInterval::new;
+	public Supplier<List<T>> supplier() {
+		return ()-> new ArrayList<>(2);
 	}
 
 	@Override
-	public BiConsumer<SimpleInterval<T>, Interval<T>> accumulator() {
-		return (a,i)-> {
-			if(a.start == null) {
-				a.set(i.getStart(), i.getExclusifEnd());
+	public BiConsumer<List<T>, Interval<T>> accumulator() {
+		return (acc,o)-> {
+			if(o.isInverted()) {
+				throw new IllegalArgumentException("inverted interval");
+			}
+			if(acc.isEmpty()) {
+				acc.add(o.getStart());
+				acc.add(o.getExclusifEnd());
 			}
 			else {
-				a.set(startOp.apply(a.getStart(), i.getStart()), 
-					exclusifEndOp.apply(a.getExclusifEnd(), i.getExclusifEnd()));
+				acc.set(0, startOp.apply(acc.get(0), o.getStart()));
+				acc.set(1, exclusifEndOp.apply(acc.get(1), o.getExclusifEnd()));
 			}
 		};
 	}
 
 	@Override
-	public BinaryOperator<SimpleInterval<T>> combiner() {
-		return (a,i)-> a.set(
-				startOp.apply(a.getStart(), i.getStart()), 
-				exclusifEndOp.apply(a.getExclusifEnd(), i.getExclusifEnd()));
+	public BinaryOperator<List<T>> combiner() {
+		return (a,b)-> {
+			a.set(0, startOp.apply(a.get(0), b.get(0)));
+			a.set(1, exclusifEndOp.apply(a.get(1), b.get(1)));
+			return a;
+		};
 	}
 
 	@Override
-	public Function<SimpleInterval<T>, Optional<Interval<T>>> finisher() {
+	public Function<List<T>, Optional<Interval<T>>> finisher() {
 
-		return a-> a.start == null || a.start.compareTo(a.exclusifEnd) >= 0 
+		return a-> a.isEmpty() || a.get(0).compareTo(a.get(1))>=0
 				? Optional.empty() 
-				: Optional.of(a);
+				: Optional.of(new ImmutableInterval<>(a.get(0), a.get(1)));
 	}
 
 	@Override
@@ -62,27 +66,23 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 		return emptySet();
 	}
 	
-	public static final <T extends Comparable<? super T>> IntervalCollector<T> maxInterval() {
+	public static final <T extends Comparable<? super T>> IntervalCollector<T> largestInterval() {
 
-		return new IntervalCollector<>(Intervals::min, Intervals::max);
+		return new IntervalCollector<>(IntervalCollector::min, IntervalCollector::max);
 	}
 	
-	public static final <T extends Comparable<? super T>> IntervalCollector<T> minInterval() {
+	public static final <T extends Comparable<? super T>> IntervalCollector<T> smallestInterval() {
 
-		return new IntervalCollector<>(Intervals::max, Intervals::min);
+		return new IntervalCollector<>(IntervalCollector::max, IntervalCollector::min);
 	}
 	
-	@NoArgsConstructor
-	@Getter
-	static final class SimpleInterval<T extends Comparable<? super T>> implements Interval<T> {
-	
-		private T start;
-		private T exclusifEnd;
 
-		SimpleInterval<T> set(T start, T exclusifEnd){
-			this.start = start;
-			this.exclusifEnd = exclusifEnd;
-			return this;
-		}
+	private static <T extends Comparable<? super T>> T min(T a, T b){
+		return a.compareTo(b) <= 0 ? a : b;
 	}
+
+	private static <T extends Comparable<? super T>> T max(T a, T b){
+		return a.compareTo(b) >= 0 ? a : b;
+	}
+	
 }

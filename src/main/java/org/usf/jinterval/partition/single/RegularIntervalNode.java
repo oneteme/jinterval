@@ -2,6 +2,7 @@ package org.usf.jinterval.partition.single;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Objects.requireNonNull;
+import static org.usf.jinterval.core.IntervalUtils.requiredPositifDirection;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,17 +12,16 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public final class RegularIntervalNode<M> extends Node<M>  {
+	
+	public static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 
 	private final ZonedDateTime exclusifEnd;
 	private final long duration;
 	
 	public RegularIntervalNode(M model, ZonedDateTime start, ZonedDateTime exclusifEnd, List<Node<M>> childrens) {
 		super(model, childrens);
-		this.exclusifEnd = requireNonNull(exclusifEnd);
-		this.duration = requireNonNull(start).until(exclusifEnd, SECONDS);
-		if(duration <= 0) {
-			throw new IllegalArgumentException("start >= exclusifEnd");
-		}
+		this.duration = requiredPositifDirection(requireNonNull(start), requireNonNull(exclusifEnd));
+		this.exclusifEnd = exclusifEnd;
 	}
 	
 	@Override
@@ -33,8 +33,6 @@ public final class RegularIntervalNode<M> extends Node<M>  {
 		}
 		return v > duration ? duration-v : v;
 	}
-	
-	public static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 	
 	public static <M> RegularIntervalNode<M> ofInstant(M model, Instant start, Instant exclusifEnd, List<Node<M>> childrens) {
 		

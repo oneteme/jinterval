@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.usf.jinterval.core.Interval;
-import org.usf.jinterval.core.Intervals;
+import org.usf.jinterval.core.IntervalUtils;
 
 import lombok.Getter;
 
@@ -22,7 +22,7 @@ public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> ext
 		super(model, childrens);
 		this.start = requireNonNull(start);
 		this.exclusifEnd = requireNonNull(exclusifEnd);
-		this.direction = Interval.direction(start, exclusifEnd);
+		this.direction = IntervalUtils.direction(start, exclusifEnd);
 	}
 
 	protected abstract ZonedDateTime adjustStart(ZonedDateTime zdt);
@@ -47,7 +47,7 @@ public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> ext
 	
 	@Override
 	public String toString() {
-		return getModel() + " : " + Intervals.toString(start, exclusifEnd);
+		return getModel() + " : " + IntervalUtils.toString(start, exclusifEnd);
 	}
 
 }

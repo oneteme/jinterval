@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.usf.jinterval.core.Intervals;
+import org.usf.jinterval.core.IntervalUtils;
+import org.usf.jinterval.partition.Part;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -17,17 +18,17 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-final class SingleModelPart<M> {
+final class SingleModelPart<M> implements Part<M> {
 	
-	static final Comparator<SingleModelPart<?>> PARTITON_COMPARATOR = comparingInt(SingleModelPart::getStart);
+	static final Comparator<SingleModelPart<?>> PARTITON_COMPARATOR = comparingInt(SingleModelPart::getStartIndex);
 	
-	int start;
-	int exclusifEnd;
+	int startIndex;
+	int exclusifEndIndex;
 	final M model;
 	
 	@Override
 	public String toString() {
-		return model + " : " + Intervals.toString(start, exclusifEnd);
+		return model + " : " + IntervalUtils.toString(startIndex, exclusifEndIndex);
 	}
 	
 	static final <M> List<SingleModelPart<M>> assign(List<SingleModelPart<M>> l1, List<SingleModelPart<M>> l2) {
@@ -37,21 +38,21 @@ final class SingleModelPart<M> {
 		List<SingleModelPart<M>> res = new LinkedList<>();
 		for(int i=0; i<l2.size(); i++) {
 			
-			exclusifEnd = l2.get(i).start;
-			while(ldx < l1.size() && l1.get(ldx).exclusifEnd <= exclusifEnd) {
+			exclusifEnd = l2.get(i).startIndex;
+			while(ldx < l1.size() && l1.get(ldx).exclusifEndIndex <= exclusifEnd) {
 				res.add(l1.get(ldx++));
 			}
-			if(ldx < l1.size() && l1.get(ldx).start < exclusifEnd) {
-				res.add(new SingleModelPart<>(l1.get(ldx).start, exclusifEnd, l1.get(ldx).model));
+			if(ldx < l1.size() && l1.get(ldx).startIndex < exclusifEnd) {
+				res.add(new SingleModelPart<>(l1.get(ldx).startIndex, exclusifEnd, l1.get(ldx).model));
 			}
 			res.add(l2.get(i));
 
-			exclusifEnd = l2.get(i).exclusifEnd;
-			while(ldx < l1.size() && l1.get(ldx).exclusifEnd <= exclusifEnd) {
+			exclusifEnd = l2.get(i).exclusifEndIndex;
+			while(ldx < l1.size() && l1.get(ldx).exclusifEndIndex <= exclusifEnd) {
 				ldx++;
 			}
-			if(ldx < l1.size() && l1.get(ldx).start <= exclusifEnd) {
-				l1.get(ldx).setStart(exclusifEnd);
+			if(ldx < l1.size() && l1.get(ldx).startIndex <= exclusifEnd) {
+				l1.get(ldx).setStartIndex(exclusifEnd);
 			}
 		}
 		for(int i=ldx; i<l1.size(); i++) {

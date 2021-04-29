@@ -5,7 +5,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static org.usf.jinterval.partition.single.SingleModelPart.PARTITON_COMPARATOR;
 import static org.usf.jinterval.partition.single.SingleModelPart.assign;
-import static org.usf.jinterval.util.CollectionUtils.notNullOrEmpty;
+import static org.usf.jinterval.util.CollectionUtils.requireNonNullElseEmptyList;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -17,20 +17,20 @@ import lombok.Getter;
 
 @Getter
 public class Node<M> {
-	
-	private final M model;
+
+	private final M model; //nullable
 	private final List<? extends Node<M>> childrens;
-	
+
 	public Node(M model, List<? extends Node<M>> childrens) {
-		this.model = model; //nullable
-		this.childrens = notNullOrEmpty(childrens);
+		this.model = model;
+		this.childrens = requireNonNullElseEmptyList(childrens);
 	}
-	
+
 	public final SingleModelPartition<M> partitions(ZonedDateTime start, ZonedDateTime exclusifEnd, int step) {
 
 		return partitions(start, exclusifEnd, step, emptyList());
 	}
-	
+
 	public final SingleModelPartition<M> partitions(ZonedDateTime start, ZonedDateTime exclusifEnd, int step, Collection<? extends RegularIntervalNode<M>> primaryNodes) {
 		int limit = (int)(requireNonNull(start).until(requireNonNull(exclusifEnd), SECONDS)/step);
 		if(limit <= 0) {
@@ -43,9 +43,9 @@ public class Node<M> {
 		return new SingleModelPartition<>(start.toInstant(), exclusifEnd.toInstant(), step, 
 				primaryPartitions.isEmpty() ? partitions : assign(partitions, primaryPartitions));
 	}
-	
+
 	protected List<SingleModelPart<M>> until(ZonedDateTime date, int index, int max, int step) {
-		
+
 		List<SingleModelPart<M>> list = new LinkedList<>();
 		long diff = compareTo(date);
 		while(index < max && diff != 0) {
@@ -55,27 +55,27 @@ public class Node<M> {
 				ends = Math.min(index+ends, max);
 				SingleModelPart<ZonedDateTime> context = new SingleModelPart<>(index, ends, date); //final reference
 				List<SingleModelPart<M>> childList = childrens.parallelStream() //parallel ?
-						.flatMap(n-> n.until(context.getModel(), context.getStart(), context.getExclusifEnd(), step).stream())
+						.flatMap(n-> n.until(context.getModel(), context.getStartIndex(), context.getExclusifEndIndex(), step).stream())
 						.sequential()
 						.sorted(PARTITON_COMPARATOR)
 						.collect(Collectors.toList());
 				if(model != null) {
 					if(childList.isEmpty()) {
-						list.add(new SingleModelPart<>(context.getStart(), context.getExclusifEnd(), model));
+						list.add(new SingleModelPart<>(context.getStartIndex(), context.getExclusifEndIndex(), model));
 					}
 					else {
-						if(context.getStart() < childList.get(0).getStart()) {
-							list.add(new SingleModelPart<>(context.getStart(), childList.get(0).getStart(), model));
+						if(context.getStartIndex() < childList.get(0).getStartIndex()) {
+							list.add(new SingleModelPart<>(context.getStartIndex(), childList.get(0).getStartIndex(), model));
 						}
 						list.add(childList.get(0));
 						for(int i=1; i<childList.size(); i++) {
-							if(childList.get(i-1).getExclusifEnd() < childList.get(i).getStart()) {
-								list.add(new SingleModelPart<>(childList.get(i-1).getExclusifEnd(), childList.get(i).getStart(), model));
+							if(childList.get(i-1).getExclusifEndIndex() < childList.get(i).getStartIndex()) {
+								list.add(new SingleModelPart<>(childList.get(i-1).getExclusifEndIndex(), childList.get(i).getStartIndex(), model));
 							}
 							list.add(childList.get(i));
 						}
-						if(childList.get(childList.size()-1).getExclusifEnd() < context.getExclusifEnd()) {
-							list.add(new SingleModelPart<>(childList.get(childList.size()-1).getExclusifEnd(), context.getExclusifEnd(), model));
+						if(childList.get(childList.size()-1).getExclusifEndIndex() < context.getExclusifEndIndex()) {
+							list.add(new SingleModelPart<>(childList.get(childList.size()-1).getExclusifEndIndex(), context.getExclusifEndIndex(), model));
 						}
 					}
 				}
@@ -96,9 +96,9 @@ public class Node<M> {
 		}
 		return list;
 	}
-		
+
 	protected long compareTo(ZonedDateTime date) {
-		
+
 		return Integer.MAX_VALUE;
 	}
 }

@@ -38,7 +38,7 @@ final class SingleModelPartition<M> {
 
 			@Override
 			public BiConsumer<List<int[]>, SingleModelPart<M>> accumulator() {
-				return (a,p)-> a.add(new int[]{p.start, p.exclusifEnd});
+				return (a,p)-> a.add(new int[]{p.startIndex, p.exclusifEndIndex});
 			}
 
 			@Override

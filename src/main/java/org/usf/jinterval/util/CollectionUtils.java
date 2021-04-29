@@ -1,34 +1,44 @@
 package org.usf.jinterval.util;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CollectionUtils {
-		
+
+	public static int requiredSameSize(Collection<? extends Collection<?>> c) {
+		return requiredSameIntField(c, Collection::size);
+	}
+
 	public static <T> int requiredSameIntField(Collection<T> c, ToIntFunction<? super T> fn) {
-		int[] arr = requiredNotEmpty(c).stream().mapToInt(fn).distinct().toArray();
-		if(arr.length != 1) {
-			throw new IllegalArgumentException("required same field");
+		var it = requiredNotEmpty(c).iterator();
+		int v = requireNonNull(fn).applyAsInt(it.next());
+		while(it.hasNext()) {
+			if(v != fn.applyAsInt(it.next())) {
+				throw new IllegalArgumentException("not equals");
+			}
 		}
-		return arr[0];
+		return v;
 	}
 
 	public static <T, U> U requiredSameField(Collection<T> c, Function<T, U> fn) {
-		List<U> arr = requiredNotEmpty(c).stream().map(fn).distinct().collect(Collectors.toList());
-		if(arr.size() != 1) {
-			throw new IllegalArgumentException("required same field");
+		var it = requiredNotEmpty(c).iterator();
+		U v = requireNonNull(fn).apply(it.next());
+		while(it.hasNext()) {
+			if(!v.equals(fn.apply(it.next()))) {
+				throw new IllegalArgumentException("not equals");
+			}	
 		}
-		return arr.get(0);
+		return v;
 	}
 	
 	public static <C extends Collection<?>> C requiredNotEmpty(C c){
@@ -38,7 +48,11 @@ public final class CollectionUtils {
 		return c;
 	}
 
-	public static <T> List<T> notNullOrEmpty(List<T> list){
-		return list == null ? emptyList() : list;
+	public static <T> List<T> requireNonNullElseEmptyList(List<T> list){
+		return requireNonNullElseSupply(list, Collections::emptyList);
+	}
+
+	public static <T, C extends Collection<T>> C requireNonNullElseSupply(C list, Supplier<C> supp){
+		return list == null ? supp.get() : list;
 	}
 }

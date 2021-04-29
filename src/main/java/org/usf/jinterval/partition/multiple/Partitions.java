@@ -1,11 +1,11 @@
 package org.usf.jinterval.partition.multiple;
 
-import static org.usf.jinterval.util.CollectionUtils.requiredSameField;
-import static org.usf.jinterval.util.CollectionUtils.requiredSameIntField;
+import static java.util.stream.Collectors.toList;
+import static lombok.AccessLevel.PRIVATE;
+import static org.usf.jinterval.core.IntervalUtils.requiredPositifDirection;
 
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,77 +14,74 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToIntBiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-import org.usf.jinterval.core.HasTemporalUnit;
 import org.usf.jinterval.core.Interval;
-import org.usf.jinterval.core.RegularInterval;
-import org.usf.jinterval.core.Serie;
-import org.usf.jinterval.partition.multiple.MultiModelPart.ObjIntFunction;
+import org.usf.jinterval.core.IntervalUtils;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = PRIVATE)
 public final class Partitions {
-	
-	private static final ObjIntFunction<Object, Object> IDENTITY = (o, i)-> o;
-	
-	public static <P, T extends Temporal & Comparable<? super T>, S extends Serie<T, ? extends P>> MultiModelPartition<T, P> ofSeries(List<S> series) {
-
-		return ofPeriods(series, requiredSameIntField(series, Serie::getStep), Serie::getPoint, null, null);
+		
+	public static <T extends Comparable<? super T> & Temporal, P extends Interval<T>> MultiModelPartition<P> periodPartition(Collection<P> periods, int step, ChronoUnit unit) {
+		
+		return periodPartition(periods, null, null, step, unit);
 	}
 	
-	public static <P, T extends Temporal & Comparable<? super T>, S extends Serie<T, ? extends P>> MultiModelPartition<T, P> ofSeries(List<S> series, T start, T exclusifEnd) {
+	public static <T extends Comparable<? super T> & Temporal, P extends Interval<T>> MultiModelPartition<P> periodPartition(Collection<P> periods, T start, T exclusifEnd, int step, ChronoUnit unit) {
 		
-		return ofPeriods(series, requiredSameIntField(series, Serie::getStep), Serie::getPoint, start, exclusifEnd);
-	}
-	
-	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> MultiModelPartition<T, U> ofPeriods(List<P> periods, int step, ObjIntFunction<P, U> fn) {
-		
-		return ofPeriods(periods, step, fn, null, null);
-	}
-	
-	public static <U, T extends Temporal & Comparable<? super T>, P extends RegularInterval<T> & HasTemporalUnit> MultiModelPartition<T, U> 
-		ofPeriods(List<P> periods, int step, ObjIntFunction<P, U> fn, T start, T exclusifEnd) {
-		
-		ChronoUnit unit = requiredSameField(periods, HasTemporalUnit::getTemporalUnit);
-		return ofIntervals(false, periods, start, exclusifEnd, (min, sp)-> until(min, sp, unit, step), fn);
+		requiredPositifDirection(start, exclusifEnd);
+		requiredPositifDirection(periods);
+		ToIntBiFunction<T, T> indexFn = (min, tp)-> (int)(unit.between(min, tp) / step);
+		return intervalPartition(periods, start, exclusifEnd, indexFn, indexFn);
 	}
 	
 
-	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, P> ofIntervals(boolean cyclic, Collection<P> periods) {
-		return ofIntervals(cyclic, periods, null, null);
+	public static <T extends Comparable<? super T>, P extends Interval<T>> MultiModelPartition<P> intervalPartition(Collection<P> intervals) {
+		
+		return intervalPartition(intervals, null, null);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T extends Temporal & Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, P> ofIntervals(boolean cyclic, Collection<P> periods, T start, T exclusifEnd) {
+	public static <T extends Comparable<? super T>, P extends Interval<T>> MultiModelPartition<P> intervalPartition(Collection<P> intervals, T start, T exclusifEnd) {
 		
 		AtomicInteger cp = new AtomicInteger();
-		return ofIntervals(cyclic, periods, start, exclusifEnd, (min, sp)-> cp.incrementAndGet(), (ObjIntFunction<P, P>) IDENTITY);
+		return intervalPartition(intervals, start, exclusifEnd, (min, sp)-> cp.get(), (min, sp)-> cp.incrementAndGet());
 	}
 	
-	private static <U, T extends Comparable<? super T>, P extends Interval<T>> MultiModelPartition<T, U> 
-		ofIntervals(boolean cyclic, Collection<P> intervals, T start, T exclusifEnd, ToIntBiFunction<T, T> indexFn, ObjIntFunction<P, U> subFn) {
+	private static <T extends Comparable<? super T>, P extends Interval<T>> MultiModelPartition<P> intervalPartition(Collection<P> intervals, T start, T exclusifEnd, 
+			ToIntBiFunction<T, T> startIndexFn, ToIntBiFunction<T, T> endIndexFn) {
 		
-		List<P> list = toList(intervals);
-		List<MultiModelPart<T,?,U>> partitions = new LinkedList<>();
-		intervalParts(cyclic, list, start, exclusifEnd, (sp, ep, indexs, min)-> 
-			partitions.add(new MultiModelPart<>(list, indexs, indexFn.applyAsInt(min, sp), indexFn.applyAsInt(min, ep), sp, ep, subFn)));
+		List<MultiModelPart<P>> partitions = new LinkedList<>();
+		intervalParts(intervals, start, exclusifEnd, 
+				(sp, ep, model, min)-> partitions.add(
+						new MultiModelPart<>(model.collect(toList()), startIndexFn.applyAsInt(min, sp), endIndexFn.applyAsInt(min, ep), sp, ep)));
+		
 		return new MultiModelPartition<>(partitions);
 	}
 
-	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(boolean cyclic, List<I> intervals, PartConsumer<T> consumer) {
+	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(Collection<I> intervals, PartConsumer<T, I> consumer) {
 		
-		intervalParts(cyclic, intervals, null, null, consumer);
+		intervalParts(intervals, null, null, consumer);
 	}
-	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(boolean cyclic, List<I> intervals, T start, T exclusifEnd, PartConsumer<T> consumer) {
+	
+	public static <T extends Comparable<? super T>, I extends Interval<T>> void intervalParts(Collection<I> intervals, T start, T exclusifEnd, PartConsumer<T, I> consumer) {
 		
 		Set<T> marks = new HashSet<>(intervals.size() * 2);
-		intervals.forEach(i->{
+		boolean regular = true;
+		for(var i : intervals){
 			marks.add(i.getStart());
 			marks.add(i.getExclusifEnd());
-		});
+			regular &= i.isRegular();
+		}
+		if(start != null && exclusifEnd != null) {
+			if(IntervalUtils.direction(start, exclusifEnd) < 1) {
+				regular = false;
+			}
+			else if(!regular) {
+				throw new IllegalArgumentException(IntervalUtils.toString(start, exclusifEnd) + " can't be regular");
+			}
+		}
 		if(start != null) {
 			marks.add(start);
 		}
@@ -92,29 +89,20 @@ public final class Partitions {
 			marks.add(exclusifEnd);
 		}
 		List<T> ordredMarks = marks.stream().sorted().collect(Collectors.toList());
-		if(cyclic) {
+		if(!regular) {
 			ordredMarks.add(ordredMarks.get(0));
 		}
 		for(int i=1; i<ordredMarks.size(); i++) {
-			T pre = ordredMarks.get(i-1), cur = ordredMarks.get(i);
-			consumer.accept(pre, cur, IntStream.range(0, intervals.size())
-					.filter(it-> intervals.get(it).intersectInterval(pre, cur))
-					.toArray(), ordredMarks.get(0));
+			T pre = ordredMarks.get(i-1);
+			T cur = ordredMarks.get(i);
+			consumer.accept(pre, cur, intervals.stream()
+					.filter(m-> m.intersectInterval(pre, cur)), ordredMarks.get(0));
 		}
 	}
-	
-	
-	private static final <T> List<T> toList(Collection<T> c){
-		return c instanceof List ? (List<T>) c : new ArrayList<>(c);
-	}
-	
-	public interface PartConsumer<T> {
-		
-		void accept(T start, T exclusifEnd, int[] indexs, T min);
-	}
-	
-	private static int until(Temporal t1, Temporal t2, ChronoUnit unit, int step) {
 
-		return (int)(t1.until(t2, unit) / step);
+	public interface PartConsumer<T,M> {
+		
+		void accept(T start, T exclusifEnd, Stream<M> models, T min);
 	}
+
 }

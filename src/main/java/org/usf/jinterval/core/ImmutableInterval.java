@@ -1,28 +1,36 @@
 package org.usf.jinterval.core;
 
 import static java.util.Objects.requireNonNull;
+import static lombok.AccessLevel.PRIVATE;
+import static org.usf.jinterval.core.IntervalUtils.requiredPositifDirection;
 
 import java.util.Objects;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-//@EqualsAndHashCode(exclude = "direction")
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = PRIVATE)
 public final class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
 	
 	@Getter private final T start;
 	@Getter private final T exclusifEnd;
 	private final int direction;
-	
+
+	public ImmutableInterval(T start, T exclusifEnd) {
+		this.start = requireNonNull(start);
+		this.exclusifEnd = requireNonNull(exclusifEnd);
+		this.direction = Interval.super.intervalDirection();
+	}
+
 	@Override
-	public int direction() {
+	public int intervalDirection() {
 		return direction;
 	}
 	
 	public ImmutableInterval<T> reverseInterval() {
-		return Interval.super.reverseInterval(ImmutableInterval::of);
+		return intervalDirection() == 0 
+				? this 
+				: new ImmutableInterval<>(exclusifEnd, start, -direction);
 	}
 	
 	@Override
@@ -39,11 +47,14 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	
 	@Override
 	public String toString() {
-		return Intervals.toString(this);
+		return IntervalUtils.toString(this);
 	}
 	
-	public static <T extends Comparable<? super T>> ImmutableInterval<T> of(T start, T exclusifEnd){
+	public static <U extends Comparable<? super U>> ImmutableInterval<U>  regularInterval(U start, U exclusifEnd) {
 		
-		return new ImmutableInterval<>(requireNonNull(start), requireNonNull(exclusifEnd), Interval.direction(start, exclusifEnd));
+		return new ImmutableInterval<>(
+				requireNonNull(start), 
+				requireNonNull(exclusifEnd), 
+				requiredPositifDirection(start, exclusifEnd));
 	}
 }

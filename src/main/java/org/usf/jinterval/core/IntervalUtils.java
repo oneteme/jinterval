@@ -37,4 +37,12 @@ public final class IntervalUtils {
 		return "[" + start + ", " + exclusifEnd  + "[";
 	}
 
+	public static <T extends Comparable<? super T>> T min(T a, T b){
+		return a.compareTo(b) <= 0 ? a : b;
+	}
+
+	public static <T extends Comparable<? super T>> T max(T a, T b){
+		return a.compareTo(b) >= 0 ? a : b;
+	}
+
 }

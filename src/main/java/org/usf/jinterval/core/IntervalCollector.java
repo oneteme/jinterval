@@ -68,21 +68,13 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 	
 	public static final <T extends Comparable<? super T>> IntervalCollector<T> largestInterval() {
 
-		return new IntervalCollector<>(IntervalCollector::min, IntervalCollector::max);
+		return new IntervalCollector<>(IntervalUtils::min, IntervalUtils::max);
 	}
 	
 	public static final <T extends Comparable<? super T>> IntervalCollector<T> smallestInterval() {
 
-		return new IntervalCollector<>(IntervalCollector::max, IntervalCollector::min);
+		return new IntervalCollector<>(IntervalUtils::max, IntervalUtils::min);
 	}
 	
-
-	private static <T extends Comparable<? super T>> T min(T a, T b){
-		return a.compareTo(b) <= 0 ? a : b;
-	}
-
-	private static <T extends Comparable<? super T>> T max(T a, T b){
-		return a.compareTo(b) >= 0 ? a : b;
-	}
 	
 }

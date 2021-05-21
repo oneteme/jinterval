@@ -12,14 +12,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = PRIVATE)
 public final class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
 	
-	@Getter private final T start;
-	@Getter private final T exclusifEnd;
+	private final T startInclusive;
+	private final T endExclusive;
 	private final int direction;
 
 	public ImmutableInterval(T start, T exclusifEnd) {
-		this.start = requireNonNull(start);
-		this.exclusifEnd = requireNonNull(exclusifEnd);
+		this.startInclusive = requireNonNull(start);
+		this.endExclusive = requireNonNull(exclusifEnd);
 		this.direction = Interval.super.intervalDirection();
+	}
+	
+	@Override
+	public T startInclusive() {
+		return startInclusive;
+	}
+	
+	@Override
+	public T endExclusive() {
+		return endExclusive;
 	}
 
 	@Override
@@ -30,19 +40,19 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	public ImmutableInterval<T> reverseInterval() {
 		return intervalDirection() == 0 
 				? this 
-				: new ImmutableInterval<>(exclusifEnd, start, -direction);
+				: new ImmutableInterval<>(endExclusive, startInclusive, -direction);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		return obj == this || (obj instanceof Interval<?> in 
-				&& start.equals(in.getStart())
-				&& exclusifEnd.equals(in.getExclusifEnd()));
+				&& startInclusive.equals(in.startInclusive())
+				&& endExclusive.equals(in.endExclusive()));
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(start, exclusifEnd);
+		return Objects.hash(startInclusive, endExclusive);
 	}
 	
 	@Override
@@ -50,11 +60,11 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 		return IntervalUtils.toString(this);
 	}
 	
-	public static <U extends Comparable<? super U>> ImmutableInterval<U>  regularInterval(U start, U exclusifEnd) {
+	public static <U extends Comparable<? super U>> ImmutableInterval<U>  regularInterval(U startInclusive, U endExclusive) {
 		
 		return new ImmutableInterval<>(
-				requireNonNull(start), 
-				requireNonNull(exclusifEnd), 
-				requiredPositifDirection(start, exclusifEnd));
+				requireNonNull(startInclusive), 
+				requireNonNull(endExclusive), 
+				requiredPositifDirection(startInclusive, endExclusive));
 	}
 }

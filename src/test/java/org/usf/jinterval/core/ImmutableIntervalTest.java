@@ -16,6 +16,7 @@ import static java.time.Month.MARCH;
 import static java.time.Month.NOVEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.usf.jinterval.Utils.assertExceptionMsg;
 
@@ -73,6 +74,8 @@ class ImmutableIntervalTest {
 	private <T extends Comparable<T>> void assertContainsInterval(Interval<T> val, T o1, T o2, boolean expected) {
 		assertEquals(expected, val.containsInterval(o1, o2));
 		assertEquals(expected, val.containsInterval(new ImmutableInterval<>(o1, o2)));
+		assertEquals(expected, new ImmutableInterval<>(o1, o2).inInterval(val));
+		assertNotEquals(expected, new ImmutableInterval<>(o1, o2).notInInterval(val));
 	}
 
 	@Test

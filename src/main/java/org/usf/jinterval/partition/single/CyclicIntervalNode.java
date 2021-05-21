@@ -14,16 +14,27 @@ import lombok.Getter;
 @Getter
 public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> extends Node<M> implements Interval<T> {
 	
-	private final T start;
-	private final T exclusifEnd;
+	private final T startInclusive;
+	private final T endExclusive;
 	private final int direction;
 
-	public CyclicIntervalNode(M model, T start, T exclusifEnd, List<Node<M>> childrens) {//ZoneOffset ?
+	public CyclicIntervalNode(M model, T startInclusive, T endExclusive, List<Node<M>> childrens) {//ZoneOffset ?
 		super(model, childrens);
-		this.start = requireNonNull(start);
-		this.exclusifEnd = requireNonNull(exclusifEnd);
-		this.direction = IntervalUtils.direction(start, exclusifEnd);
+		this.startInclusive = requireNonNull(startInclusive);
+		this.endExclusive = requireNonNull(endExclusive);
+		this.direction = IntervalUtils.direction(startInclusive, endExclusive);
 	}
+	
+	@Override
+	public T startInclusive() {
+		return startInclusive;
+	}
+	
+	@Override
+	public T endExclusive() {
+		return endExclusive;
+	}
+
 
 	protected abstract ZonedDateTime adjustStart(ZonedDateTime zdt);
 	
@@ -47,7 +58,7 @@ public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> ext
 	
 	@Override
 	public String toString() {
-		return getModel() + " : " + IntervalUtils.toString(start, exclusifEnd);
+		return getModel() + " : " + IntervalUtils.toString(startInclusive, endExclusive);
 	}
 
 }

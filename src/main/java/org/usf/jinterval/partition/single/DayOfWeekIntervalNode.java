@@ -18,14 +18,14 @@ public final class DayOfWeekIntervalNode<M> extends CyclicIntervalNode<M, DayOfW
 	@Override
 	protected ZonedDateTime adjustStart(ZonedDateTime zdt) {
 		return adjust(zdt, containsField(zdt.toLocalDate().getDayOfWeek())
-				? previousOrSame(getStart()) 
-				: next(getStart()));
+				? previousOrSame(startInclusive()) 
+				: next(startInclusive()));
 	}
 
 	@Override
 	protected ZonedDateTime adjustExlusifEnd(ZonedDateTime zdt) {
 
-		return adjust(zdt, next(this.getExclusifEnd()));
+		return adjust(zdt, next(this.endExclusive()));
 	}
 	
 	private ZonedDateTime adjust(ZonedDateTime zdt, TemporalAdjuster adj) {

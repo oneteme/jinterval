@@ -34,7 +34,6 @@ class IntervalsTest {
 		testOverlapingIntervals(true, intervals(-1,3, 5,7, 4,15, 3,5, 15,1), intervals(-1,1, 4,5, 5,7));
 	}
 	
-
 	@Test
 	void testMissingAngOverlapingIntervals() {
 
@@ -85,13 +84,13 @@ class IntervalsTest {
 	
 	
 	
-	private static <T extends Comparable<? super T>> Interval<T> newInterval(T start, T end) {
+	private static <T extends Comparable<? super T>> Interval<T> newInterval(T s, T e) {
 	
 		return new Interval<T>() {
 			@Override
-			public T getStart() {return start;}
+			public T startInclusive() {return s;}
 			@Override
-			public T getExclusifEnd() {return end;}
+			public T endExclusive() {return e;}
 		};
 	}
 	

@@ -15,9 +15,9 @@ public final class TimeIntervalNode<M> extends CyclicIntervalNode<M, LocalTime> 
 	@Override
 	protected ZonedDateTime adjustStart(ZonedDateTime zdt) {
 		
-		int shift = getDirection() > 0 && zdt.toLocalTime().compareTo(getExclusifEnd()) >=0 ? 1 : 0;
+		int shift = getDirection() > 0 && zdt.toLocalTime().compareTo(endExclusive()) >=0 ? 1 : 0;
 		return zdt.toLocalDate().plusDays(shift)
-				.atTime(getStart())
+				.atTime(startInclusive())
 				.atZone(DEFAULT_ZONE_ID);
 	}
 	
@@ -25,7 +25,7 @@ public final class TimeIntervalNode<M> extends CyclicIntervalNode<M, LocalTime> 
 	protected ZonedDateTime adjustExlusifEnd(ZonedDateTime zdt) {
 
 		return zdt.toLocalDate().plusDays(getDirection() > 0 ? 0 : 1)
-				.atTime(getExclusifEnd())
+				.atTime(endExclusive())
 				.atZone(DEFAULT_ZONE_ID);
 	}
 	

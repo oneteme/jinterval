@@ -101,11 +101,11 @@ public final class Partitions {
 			marks.add(exclusifEnd);
 		}
 		for(var o : intervals){
-			if(filter.test(o.getStart())) {
-				marks.add(o.getStart());
+			if(filter.test(o.startInclusive())) {
+				marks.add(o.startInclusive());
 			}
-			if(filter.test(o.getExclusifEnd())) {
-				marks.add(o.getExclusifEnd());
+			if(filter.test(o.endExclusive())) {
+				marks.add(o.endExclusive());
 			}
 		}
 		if(!marks.isEmpty()) {

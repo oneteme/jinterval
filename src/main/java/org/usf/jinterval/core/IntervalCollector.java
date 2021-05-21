@@ -33,12 +33,12 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 				throw new IllegalArgumentException("inverted interval");
 			}
 			if(acc.isEmpty()) {
-				acc.add(o.getStart());
-				acc.add(o.getExclusifEnd());
+				acc.add(o.startInclusive());
+				acc.add(o.endExclusive());
 			}
 			else {
-				acc.set(0, startOp.apply(acc.get(0), o.getStart()));
-				acc.set(1, exclusifEndOp.apply(acc.get(1), o.getExclusifEnd()));
+				acc.set(0, startOp.apply(acc.get(0), o.startInclusive()));
+				acc.set(1, exclusifEndOp.apply(acc.get(1), o.endExclusive()));
 			}
 		};
 	}

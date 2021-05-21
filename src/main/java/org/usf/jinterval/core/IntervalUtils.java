@@ -22,7 +22,7 @@ public final class IntervalUtils {
 	
 	public static <T extends Comparable<? super T>> void requiredPositifDirection(Collection<? extends Interval<T>> intervals){
 		
-		intervals.forEach(i-> requiredPositifDirection(i.getStart(), i.getExclusifEnd()));
+		intervals.forEach(i-> requiredPositifDirection(i.startInclusive(), i.endExclusive()));
 	}
 	
 	public static String toString(int start, int exclusifEnd){
@@ -30,7 +30,7 @@ public final class IntervalUtils {
 	}
 	
 	public static String toString(Interval<?> i){
-		return toString(i.getStart(), i.getExclusifEnd());
+		return toString(i.startInclusive(), i.endExclusive());
 	}
 	
 	public static String toString(Object start, Object exclusifEnd){

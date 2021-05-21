@@ -45,5 +45,10 @@ public final class Utils {
 			list.add(new ImmutableInterval<>(values[i-1], values[i]));
 		}
 		return list;
-	}	
+	}
+
+	public static <T extends Comparable<? super T>> ImmutableInterval<T> interval(T start, T exclusifEnd) {
+		
+		return new ImmutableInterval<>(start, exclusifEnd);
+	}
 }

@@ -25,7 +25,6 @@ public final class Intervals {
 	private static final IntPredicate OVERLAP_INTERVALS_FILTER = i-> i > 1;
 	private static final IntPredicate DIRTY_INTERVALS_FILTER   = i-> i != 1;
 	
-	
 	public static <T extends Comparable<? super T>> Optional<Interval<T>> minInterval(Collection<? extends Interval<T>> intervals) {
 
 		return intervals.stream().collect(smallestInterval());

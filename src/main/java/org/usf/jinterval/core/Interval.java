@@ -7,21 +7,21 @@ import java.util.function.IntSupplier;
 
 public interface Interval<T extends Comparable<? super T>> {
 	
-	T getStart();
+	T startInclusive();
 
-	T getExclusifEnd();
+	T endExclusive();
 	
 	default boolean containsField(T field) {
 		requireNonNull(field);
 		int diff = intervalDirection();
 		return diff == 0 || (diff > 0 
-				? getStart().compareTo(field) <= 0 && getExclusifEnd().compareTo(field) > 0
-				: getStart().compareTo(field) <= 0 || getExclusifEnd().compareTo(field) > 0);
+				? startInclusive().compareTo(field) <= 0 && endExclusive().compareTo(field) > 0
+				: startInclusive().compareTo(field) <= 0 || endExclusive().compareTo(field) > 0);
 	}
 
 	default boolean containsInterval(Interval<T> p) {
 		requireNonNull(p);
-		return containsInterval(p.getStart(), p.getExclusifEnd(), p::intervalDirection);
+		return containsInterval(p.startInclusive(), p.endExclusive(), p::intervalDirection);
 	}
 	
 	default boolean containsInterval(T start, T exclusifEnd) {
@@ -38,13 +38,13 @@ public interface Interval<T extends Comparable<? super T>> {
 			return false;
 		}
 		return (diff ^ pDiff) >= 0
-				? getStart().compareTo(start) <= 0 && getExclusifEnd().compareTo(exclusifEnd) >= 0
-				: getStart().compareTo(start) <= 0 || getExclusifEnd().compareTo(exclusifEnd) >= 0;
+				? startInclusive().compareTo(start) <= 0 && endExclusive().compareTo(exclusifEnd) >= 0
+				: startInclusive().compareTo(start) <= 0 || endExclusive().compareTo(exclusifEnd) >= 0;
 	}
 	
 	default boolean intersectInterval(Interval<T> p) {
 		requireNonNull(p);
-		return intersectInterval(p.getStart(), p.getExclusifEnd(), p::intervalDirection);
+		return intersectInterval(p.startInclusive(), p.endExclusive(), p::intervalDirection);
 	}
 	
 	default boolean intersectInterval(T start, T exclusifEnd) {
@@ -61,8 +61,16 @@ public interface Interval<T extends Comparable<? super T>> {
 			return true;
 		}
 		return (diff ^ pDiff) >= 0
-				? getStart().compareTo(exclusifEnd) < 0 && getExclusifEnd().compareTo(start) > 0
-				: getStart().compareTo(exclusifEnd) < 0 || getExclusifEnd().compareTo(start) > 0;
+				? startInclusive().compareTo(exclusifEnd) < 0 && endExclusive().compareTo(start) > 0
+				: startInclusive().compareTo(exclusifEnd) < 0 || endExclusive().compareTo(start) > 0;
+	}
+	
+	default boolean inInterval(Interval<T> p) {
+		return requireNonNull(p).containsInterval(this);
+	}
+
+	default boolean notInInterval(Interval<T> p) {
+		return !requireNonNull(p).containsInterval(this);
 	}
 	
 	default boolean isInverted() {
@@ -75,11 +83,11 @@ public interface Interval<T extends Comparable<? super T>> {
 
 	default boolean symmetrical(Interval<T> p) {
 		requireNonNull(p);
-		return this.getStart().equals(p.getExclusifEnd()) 
-			&& this.getExclusifEnd().equals(p.getStart());
+		return this.startInclusive().equals(p.endExclusive()) 
+			&& this.endExclusive().equals(p.startInclusive());
 	}
 	
 	default int intervalDirection() {
-		return direction(getStart(), getExclusifEnd());
+		return direction(startInclusive(), endExclusive());
 	}
 }

@@ -1,6 +1,7 @@
 package org.usf.jinterval.util;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElseGet;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,10 +50,10 @@ public final class CollectionUtils {
 	}
 
 	public static <T> List<T> requireNonNullElseEmptyList(List<T> list){
-		return requireNonNullElseSupply(list, Collections::emptyList);
+		return requireNonNullElseGet(list, Collections::emptyList);
 	}
 
 	public static <T, C extends Collection<T>> C requireNonNullElseSupply(C list, Supplier<C> supp){
-		return list == null ? supp.get() : list;
+		return requireNonNullElseGet(list, supp);
 	}
 }

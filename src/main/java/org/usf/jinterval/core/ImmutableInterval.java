@@ -6,7 +6,6 @@ import static org.usf.jinterval.core.IntervalUtils.requiredPositifDirection;
 
 import java.util.Objects;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PRIVATE)
@@ -45,9 +44,15 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj == this || (obj instanceof Interval<?> in 
-				&& startInclusive.equals(in.startInclusive())
-				&& endExclusive.equals(in.endExclusive()));
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof Interval<?>) {
+			var in = (Interval<?>) obj;
+			return startInclusive.equals(in.startInclusive())
+					&& endExclusive.equals(in.endExclusive());
+		}
+		return false;
 	}
 	
 	@Override

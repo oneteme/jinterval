@@ -12,6 +12,7 @@ import static org.usf.jinterval.core.IntervalUtils.direction;
 import static org.usf.jinterval.core.IntervalUtils.requiredPositifDirection;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -71,6 +72,26 @@ class IntervalUtilsTest {
 		assertEquals("[MONDAY, SATURDAY[", IntervalUtils.toString(new ImmutableInterval<>(MONDAY, SATURDAY)));
 		assertEquals("[SATURDAY, MONDAY[", IntervalUtils.toString(new ImmutableInterval<>(SATURDAY, MONDAY)));
 		assertEquals("[MONDAY, MONDAY[", IntervalUtils.toString(new ImmutableInterval<>(MONDAY, MONDAY)));
+	}
+	
+
+	@Test
+	void testMin() {
+	
+		assertEquals(1, IntervalUtils.min(1, 3));
+		assertEquals(2, IntervalUtils.min(5., 2.));
+		assertEquals(LocalDate.of(2020, 1, 1), IntervalUtils.min(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1)));
+		assertEquals(LocalTime.of(22, 33, 54), IntervalUtils.min(LocalTime.of(22, 33, 55), LocalTime.of(22, 33, 54)));
+	}
+	
+
+	@Test
+	void testMax() {
+	
+		assertEquals(3, IntervalUtils.max(1, 3));
+		assertEquals(5, IntervalUtils.max(5., 2.));
+		assertEquals(LocalDate.of(2020, 2, 1), IntervalUtils.max(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1)));
+		assertEquals(LocalTime.of(22, 33, 55), IntervalUtils.max(LocalTime.of(22, 33, 55), LocalTime.of(22, 33, 54)));
 	}
 
 }

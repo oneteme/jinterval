@@ -21,6 +21,10 @@ import org.usf.java.jinterval.core.Interval;
  */
 public final class DayOfWeekIntervalNode<M> extends CyclicIntervalNode<M, DayOfWeek>  {
 
+	public DayOfWeekIntervalNode(M model, DayOfWeek start, DayOfWeek exclusifEnd) {
+		super(model, start, exclusifEnd, null);
+	}
+	
 	public DayOfWeekIntervalNode(M model, DayOfWeek start, DayOfWeek exclusifEnd, List<Node<M>> childrens) {
 		super(model, start, exclusifEnd, childrens);
 	}

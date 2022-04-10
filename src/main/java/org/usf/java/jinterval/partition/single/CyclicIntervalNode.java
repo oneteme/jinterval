@@ -4,6 +4,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,21 +57,29 @@ public abstract class CyclicIntervalNode<M, T extends Comparable<? super T>> ext
 		if(fullInterval()) {
 			return deepApply(zdt, from, to, step);
 		}
-		var list = new LinkedList<SingleModelPart<M>>();
 		var in = adjustInterval(zdt);
 		var prv = in.startInclusive();
-		var nxt = in.endExclusive();
 		var sft = stepDuration(zdt, prv, step); //+/-
 		int idx1 = from + Math.max(0, sft);
-		int idx2 = from + sft + stepDuration(prv, nxt, step);
-		while(idx1 < to) {
+		if(idx1 < to) {
+			var list = new LinkedList<SingleModelPart<M>>();
+			var nxt = in.endExclusive();
+			int idx2 = idx1 + stepDuration(sft > 0 ? prv : zdt, nxt, step);
 			list.addAll(deepApply(sft > 0 ? prv : zdt, idx1, Math.min(to, idx2), step));
 			prv = jump(prv, startInclusive());
 			idx1 = idx2 + stepDuration(nxt, prv, step);
 			nxt = jump(nxt, endExclusive());
 			idx2 = idx1 + stepDuration(prv, nxt, step);
+			while(idx1 < to) {
+				list.addAll(deepApply(prv, idx1, Math.min(to, idx2), step));
+				prv = jump(prv, startInclusive());
+				idx1 = idx2 + stepDuration(nxt, prv, step);
+				nxt = jump(nxt, endExclusive());
+				idx2 = idx1 + stepDuration(prv, nxt, step);
+			}
+			return list;
 		}
-		return list;
+		return emptyList();
 	}
 	
 	@Override

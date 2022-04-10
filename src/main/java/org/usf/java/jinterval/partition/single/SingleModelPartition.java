@@ -38,10 +38,13 @@ public final class SingleModelPartition<M> {
 		int i = 1;
 		while(i<parts.size()) {
 			var prv = parts.get(i-1);
-			var nxt = parts.get(i);
-			if(prv.getEndExclusiveIndex() == nxt.getStartIndex()) {
-				arr.add(new int[] {prv.getStartIndex(), nxt.getEndExclusiveIndex()});
-				i+=2;
+			int j = i;
+			while(j<parts.size() && parts.get(j-1).getEndExclusiveIndex() == parts.get(j).getStartIndex()) {
+				j++;
+			}
+			if(j > i) {
+				arr.add(new int[] {prv.getStartIndex(), parts.get(j-1).getEndExclusiveIndex()});
+				i=j+1;
 			}
 			else {
 				arr.add(new int[] {prv.getStartIndex(), prv.getEndExclusiveIndex()});

@@ -1,8 +1,5 @@
 package org.usf.java.jinterval.core;
 
-import static java.time.DayOfWeek.MONDAY;
-
-import java.time.DayOfWeek;
 import java.util.Collection;
 
 import lombok.AccessLevel;
@@ -46,13 +43,6 @@ public final class IntervalUtils {
 
 	public static <T extends Comparable<? super T>> T max(T a, T b){
 		return a.compareTo(b) >= 0 ? a : b;
-	}
-	
-	public static void main(String[] args) {
-		
-		System.out.println(direction(DayOfWeek.FRIDAY, DayOfWeek.MONDAY));
-		System.out.println(direction(DayOfWeek.FRIDAY, DayOfWeek.SUNDAY));
-		
 	}
 
 }

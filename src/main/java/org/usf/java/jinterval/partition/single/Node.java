@@ -40,7 +40,7 @@ public class Node<M> {
 		var limit = stepDuration(requireNonNull(start), requireNonNull(endExclusive), step);
 		var parts = apply(start, 0, limit, step);
 		parts.sort(PARTITON_COMPARATOR);
-		if(primary != null && primary.isEmpty()) {
+		if(primary != null && !primary.isEmpty()) {
 			var over = primary.stream().flatMap(n-> n.apply(start, 0, limit, step).stream())
 					.sorted(PARTITON_COMPARATOR)
 					.collect(toList());

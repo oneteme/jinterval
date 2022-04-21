@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = PACKAGE)
-final class MultiModelPartition<T> {
+public final class MultiModelPartition<T> {
 	
 	private static final IntPredicate EMPTY_MODEL_PART_FILTER  = i-> i == 0;
 	private static final IntPredicate SINGLE_MODEL_PART_FILTER = i-> i == 1;

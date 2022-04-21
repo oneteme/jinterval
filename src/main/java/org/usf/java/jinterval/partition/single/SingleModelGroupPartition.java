@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	
 	private final Instant start;
-	private final Instant exclusifEnd;
+	private final Instant endExclusive;
 	private final int step;
 	private final List<SingleModelGroupPart<M>> partitions;
 
@@ -49,7 +49,7 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	
 	@Override
 	public Instant endExclusive() {
-		return endExclusive();
+		return endExclusive;
 	}
 	
 }

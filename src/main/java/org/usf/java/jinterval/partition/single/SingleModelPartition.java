@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.usf.java.jinterval.core.Interval;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,19 +20,29 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public final class SingleModelPartition<M> {
+public final class SingleModelPartition<M> implements Interval<Instant> {
 	
 	private final Instant start;
-	private final Instant exclusifEnd;
+	private final Instant endExclusive;
 	private final int step;
 	private final Collection<SingleModelPart<M>> partitions;
 	
 	public SingleModelGroupPartition<M> groupByModel(){
 		
-		return new SingleModelGroupPartition<>(start, exclusifEnd, step, partitions.stream()
+		return new SingleModelGroupPartition<>(start, endExclusive, step, partitions.stream()
 		.collect(groupingBy(SingleModelPart::getModel)).entrySet().stream()
 		.map(e-> new SingleModelGroupPart<>(e.getKey(), chainParts(e.getValue())))
 		.collect(toList()));
+	}
+	
+	@Override
+	public Instant startInclusive() {
+		return start;
+	}
+	
+	@Override
+	public Instant endExclusive() {
+		return endExclusive;
 	}
 	
 	static final <M> int[][] chainParts(List<SingleModelPart<M>> parts){ //same model

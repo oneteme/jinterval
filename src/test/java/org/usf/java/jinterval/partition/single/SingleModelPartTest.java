@@ -9,13 +9,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.usf.java.jinterval.partition.single.SingleModelPart;
 
 class SingleModelPartTest {
 	
 	@ParameterizedTest(name = "{0} <= {1})")
 	@MethodSource("caseFactory")
-	void test(List<SingleModelPart<String>> l1, List<SingleModelPart<String>> l2, List<SingleModelPart<String>> expected) {
+	void testAssign(List<SingleModelPart<String>> l1, List<SingleModelPart<String>> l2, List<SingleModelPart<String>> expected) {
 		
 		assertIterableEquals(expected, SingleModelPart.assign(l1, l2));
 	}

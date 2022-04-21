@@ -6,9 +6,9 @@ import static org.usf.java.jinterval.core.IntervalUtils.requiredPositifDirection
 
 import java.util.Objects;
 
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+//@EqualsAndHashCode(of = {"startInclusive", "endExclusive"})
 @RequiredArgsConstructor(access = PRIVATE)
 public final class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
 	

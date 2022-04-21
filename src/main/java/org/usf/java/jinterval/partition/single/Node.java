@@ -4,13 +4,14 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.usf.java.jinterval.partition.single.SingleModelPart.PARTITON_COMPARATOR;
-import static org.usf.java.jinterval.util.CollectionUtils.requireNonNullElseEmptyList;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class Node<M> {
 
 	public Node(M model, List<Node<M>> childrens) {
 		this.model = model;
-		this.childrens = requireNonNullElseEmptyList(childrens);
+		this.childrens = ofNullable(childrens).orElseGet(Collections::emptyList);
 	}
 
 	public final SingleModelPartition<M> partitions(ZonedDateTime start, ZonedDateTime endExclusive, int step) {

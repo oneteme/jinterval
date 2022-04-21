@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = PACKAGE)
-final class MultiModelPart<T> implements Part<List<T>> {
+public final class MultiModelPart<T> implements Part<List<T>> {
 
 	private final List<T> model;
 	private final int startIndex;

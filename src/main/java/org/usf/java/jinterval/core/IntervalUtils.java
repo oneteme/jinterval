@@ -25,6 +25,12 @@ public final class IntervalUtils {
 		intervals.forEach(i-> requiredPositifDirection(i.startInclusive(), i.endExclusive()));
 	}
 	
+	public static boolean intervalEquals(Interval<?> int1, Interval<?> int2) {
+		return int1 == int2 || (
+				int1.startInclusive().equals(int2.startInclusive()) && 
+				int1.endExclusive().equals(int2.endExclusive()));
+	}
+	
 	public static String toString(int start, int exclusifEnd){
 		return "[" + start + ", " + exclusifEnd  + "[";
 	}

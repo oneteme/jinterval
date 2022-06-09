@@ -6,13 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.usf.java.jinterval.Utils.assertExceptionMsg;
 import static org.usf.java.jinterval.Utils.intervals;
-import static org.usf.java.jinterval.core.Intervals.*;
+import static org.usf.java.jinterval.core.Intervals.collectMissingAndOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.collectMissingIntervals;
+import static org.usf.java.jinterval.core.Intervals.collectOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.isMissingIntervals;
+import static org.usf.java.jinterval.core.Intervals.isMissingOrOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.isOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.missingAndOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.missingIntervals;
+import static org.usf.java.jinterval.core.Intervals.overlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.requiredNotMissingAndOverlappingIntervals;
+import static org.usf.java.jinterval.core.Intervals.requiredNotMissingIntervals;
+import static org.usf.java.jinterval.core.Intervals.requiredNotOverlappingIntervals;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.core.Interval;
 import org.usf.java.jinterval.core.exception.IntervalMismatchException;
 
 class IntervalsTest {
@@ -54,7 +64,7 @@ class IntervalsTest {
 		else {
 			assertExceptionMsg(IntervalMismatchException.class, ()-> requiredNotMissingIntervals(inverted, intervals), "missing interval");
 		}
-		assertArrayEquals(expected.toArray(), collectMissingIntervals(inverted, intervals, IntervalsTest::newInterval, Collectors.toList()).toArray());
+		assertArrayEquals(expected.toArray(), collectMissingIntervals(inverted, intervals, ImmutableInterval::new, Collectors.toList()).toArray());
 	}
 	
 	private void testOverlapingIntervals(boolean inverted, Collection<? extends Interval<Integer>> intervals, Collection<? extends Interval<Integer>> expected) {
@@ -67,7 +77,7 @@ class IntervalsTest {
 		else {
 			assertExceptionMsg(IntervalMismatchException.class, ()-> requiredNotOverlappingIntervals(inverted, intervals), "overlaping interval");
 		}
-		assertArrayEquals(expected.toArray(), collectOverlappingIntervals(inverted, intervals, IntervalsTest::newInterval, Collectors.toList()).toArray());
+		assertArrayEquals(expected.toArray(), collectOverlappingIntervals(inverted, intervals, ImmutableInterval::new, Collectors.toList()).toArray());
 	}
 	
 	private void testMissingAngOverlapingIntervals(boolean inverted, Collection<? extends Interval<Integer>> intervals, Collection<? extends Interval<Integer>> expected) {
@@ -80,19 +90,8 @@ class IntervalsTest {
 		else {
 			assertExceptionMsg(IntervalMismatchException.class, ()-> requiredNotMissingAndOverlappingIntervals(inverted, intervals), "mismatch interval");
 		}
-		assertArrayEquals(expected.toArray(), collectMissingAndOverlappingIntervals(inverted, intervals, IntervalsTest::newInterval, Collectors.toList()).toArray());
+		assertArrayEquals(expected.toArray(), collectMissingAndOverlappingIntervals(inverted, intervals, ImmutableInterval::new, Collectors.toList()).toArray());
 	}
 	
-	
-	
-	private static <T extends Comparable<? super T>> Interval<T> newInterval(T s, T e) {
-	
-		return new Interval<T>() {
-			@Override
-			public T startInclusive() {return s;}
-			@Override
-			public T endExclusive() {return e;}
-		};
-	}
 	
 }

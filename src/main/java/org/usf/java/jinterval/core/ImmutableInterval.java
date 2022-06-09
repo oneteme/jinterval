@@ -4,11 +4,10 @@ import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 import static org.usf.java.jinterval.core.IntervalUtils.requiredPositifDirection;
 
-import java.util.Objects;
-
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
-//@EqualsAndHashCode(of = {"startInclusive", "endExclusive"})
+@EqualsAndHashCode(of = {"startInclusive", "endExclusive"})
 @RequiredArgsConstructor(access = PRIVATE)
 public final class ImmutableInterval<T extends Comparable<? super T>> implements Interval<T> {
 	
@@ -42,25 +41,7 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 				? this 
 				: new ImmutableInterval<>(endExclusive, startInclusive, -direction);
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if(obj == this) {
-			return true;
-		}
-		if(obj instanceof Interval<?>) {
-			var in = (Interval<?>) obj;
-			return startInclusive.equals(in.startInclusive())
-					&& endExclusive.equals(in.endExclusive());
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(startInclusive, endExclusive);
-	}
-	
+
 	@Override
 	public String toString() {
 		return IntervalUtils.toString(this);

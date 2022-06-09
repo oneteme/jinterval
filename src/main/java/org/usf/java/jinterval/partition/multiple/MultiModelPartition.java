@@ -1,5 +1,6 @@
 package org.usf.java.jinterval.partition.multiple;
 
+import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PACKAGE;
 
 import java.util.ArrayList;
@@ -24,6 +25,12 @@ public final class MultiModelPartition<T> {
 	private static final IntPredicate MULTI_MODEL_PART_FILTER  = i-> i > 1;
 	
 	private final List<MultiModelPart<T>> partitions;
+	
+	public <R> List<R> map(Function<MultiModelPart<T>, R> fn){
+		return partitions.stream()
+				.map(fn)
+				.collect(toList());
+	}
 	
 	public List<T> collect(BinaryOperator<T> op){
 		return partitions.stream()

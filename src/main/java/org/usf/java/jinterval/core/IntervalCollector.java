@@ -76,5 +76,4 @@ public final class IntervalCollector<T extends Comparable<? super T>> implements
 		return new IntervalCollector<>(IntervalUtils::max, IntervalUtils::min);
 	}
 	
-	
 }

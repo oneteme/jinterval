@@ -24,8 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.core.ImmutableInterval;
-import org.usf.java.jinterval.core.Interval;
 
 class ImmutableIntervalTest {
 
@@ -147,10 +145,10 @@ class ImmutableIntervalTest {
 	@Test
 	void testHashCode() {
 
-		assertEquals(1012, new ImmutableInterval<>(1, 20).hashCode());
-		assertEquals(1582, new ImmutableInterval<>(20, 1).hashCode());
-		assertEquals(1218947851, new ImmutableInterval<>(LocalTime.MIN, LocalTime.NOON).hashCode());
-		assertEquals(-867351113, new ImmutableInterval<>(LocalTime.NOON, LocalTime.MIN).hashCode());
+		assertEquals(3560, new ImmutableInterval<>(1, 20).hashCode());
+		assertEquals(4662, new ImmutableInterval<>(20, 1).hashCode());
+		assertEquals(1218950371, new ImmutableInterval<>(LocalTime.MIN, LocalTime.NOON).hashCode());
+		assertEquals(-1096574041, new ImmutableInterval<>(LocalTime.NOON, LocalTime.MIN).hashCode());
 	}
 
 	@Test

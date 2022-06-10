@@ -15,9 +15,9 @@ public final class ImmutableInterval<T extends Comparable<? super T>> implements
 	private final T endExclusive;
 	private final int direction;
 
-	public ImmutableInterval(T start, T exclusifEnd) {
+	public ImmutableInterval(T start, T endExclusive) {
 		this.startInclusive = requireNonNull(start);
-		this.endExclusive = requireNonNull(exclusifEnd);
+		this.endExclusive = requireNonNull(endExclusive);
 		this.direction = Interval.super.intervalDirection();
 	}
 	

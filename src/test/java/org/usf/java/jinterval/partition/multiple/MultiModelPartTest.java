@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.partition.multiple.MultiModelPart;
 
 class MultiModelPartTest {
 

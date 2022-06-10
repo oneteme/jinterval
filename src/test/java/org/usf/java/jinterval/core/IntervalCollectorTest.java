@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.core.ImmutableInterval;
-import org.usf.java.jinterval.core.Interval;
-import org.usf.java.jinterval.core.IntervalCollector;
 
 class IntervalCollectorTest  {
 	

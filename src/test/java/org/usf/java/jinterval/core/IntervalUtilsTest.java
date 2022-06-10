@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.core.ImmutableInterval;
-import org.usf.java.jinterval.core.IntervalUtils;
 
 class IntervalUtilsTest {
 

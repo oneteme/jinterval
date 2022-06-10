@@ -15,15 +15,11 @@ import static org.usf.java.jinterval.partition.multiple.Partitions.intervalParti
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
-import org.usf.java.jinterval.Utils;
 import org.usf.java.jinterval.core.ImmutableInterval;
-import org.usf.java.jinterval.partition.multiple.MultiModelPart;
-import org.usf.java.jinterval.partition.multiple.Partitions;
 
 class PartitionsTest {
 	

@@ -11,6 +11,17 @@ public interface Interval<T extends Comparable<? super T>> {
 
 	T endExclusive();
 	
+
+	default boolean equalInterval(Interval<T> p) {
+		requireNonNull(p);
+		return equalInterval(p.startInclusive(), p.endExclusive());
+	}
+	
+	default boolean equalInterval(T start, T exclusifEnd) {
+		return startInclusive().equals(requireNonNull(start))
+				&& endExclusive().equals(requireNonNull(exclusifEnd));
+	}
+	
 	default boolean containsField(T field) {
 		requireNonNull(field);
 		var diff = intervalDirection();

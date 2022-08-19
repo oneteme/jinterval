@@ -2,8 +2,11 @@ package org.usf.java.jinterval.partition.single;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,18 @@ public final class SingleModelGroupPart<M> {
 		}
 		return acc;
 	}
+	
+	public <R> R apply(R identity, IntFunction<R> fn, BinaryOperator<R> op) {
+
+		R acc = identity;
+		for(int[] pair : partitions) {
+			for(int i=pair[0]; i<pair[1]; i++) {
+				acc = op.apply(acc, fn.apply(i));
+			}
+		}
+		return acc;
+	}
+	
 	
 	@Override
 	public String toString() {

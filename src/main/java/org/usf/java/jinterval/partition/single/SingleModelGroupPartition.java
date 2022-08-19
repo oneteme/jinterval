@@ -23,7 +23,7 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	
 	private final Instant start;
 	private final Instant endExclusive;
-	private final int step;
+	private final int secondStep;
 	private final List<SingleModelGroupPart<M>> partitions;
 
 	<T, R> List<R> apply(List<T> list, Function<M, R> identity, BiFunction<R, T, R> fn) {
@@ -50,6 +50,10 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	@Override
 	public Instant endExclusive() {
 		return endExclusive;
+	}
+	
+	public int secondStep() {
+		return secondStep;
 	}
 	
 }

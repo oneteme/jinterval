@@ -1,13 +1,19 @@
 package org.usf.java.jinterval.partition.single;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.usf.java.jinterval.core.TemporalUtils.nStepBetween;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.usf.java.jinterval.core.Interval;
+import org.usf.java.jinterval.core.TemporalUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +60,13 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	
 	public int secondStep() {
 		return secondStep;
+	}
+	
+	public static final <M> SingleModelGroupPartition<M> of(M model, Interval<Instant> interval, int secondStep) {
+		
+		var exEnd = (int)nStepBetween(interval.startInclusive(), interval.endExclusive(), secondStep, SECONDS);
+		return new SingleModelGroupPartition<>(interval.startInclusive(), interval.endExclusive(), secondStep, 
+				singletonList(new SingleModelGroupPart<>(model, new int[][] {{0, exEnd}})));
 	}
 	
 }

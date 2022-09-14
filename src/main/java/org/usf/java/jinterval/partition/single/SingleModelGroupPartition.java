@@ -78,7 +78,7 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 		return secondStep;
 	}
 	
-	public static final <M> SingleModelGroupPartition<M> of(M model, Interval<Instant> interval, int secondStep) {
+	public static final <M> SingleModelGroupPartition<M> single(M model, Interval<Instant> interval, int secondStep) {
 		
 		var exEnd = (int)nStepBetween(interval.startInclusive(), interval.endExclusive(), secondStep, SECONDS);
 		return new SingleModelGroupPartition<>(interval.startInclusive(), interval.endExclusive(), secondStep, 

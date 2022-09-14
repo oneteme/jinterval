@@ -1,12 +1,12 @@
 package org.usf.java.jinterval.partition.single;
 
-import java.util.Arrays;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.util.stream.Collectors.joining;
+
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,42 +25,30 @@ public final class SingleModelGroupPart<M> {
 	private final M model;
 	private final int[][] partitions;
 	
-	<T, R> R apply(List<T> list, Function<M, R> identity, BiFunction<R, T, R> fn) {
-		
-		return apply(list, identity.apply(model), fn);
-	}
-
-	<T, U, R> R apply(List<T> list, U identity, BiFunction<U, T, U> fn, BiFunction<M, U, R> finisher) {
-		
-		return finisher.apply(model, apply(list, identity, fn));
+	<T, R> R apply(List<T> list, R identity, BiFunction<R, T, R> fn) {
+		return apply(0, list, identity, fn);
 	}
 	
-	private <T, R> R apply(List<T> list, R identity, BiFunction<R, T, R> fn) {
-		
+	<T, R> R apply(int shift, List<T> list, R identity, BiFunction<R, T, R> fn) {
 		R acc = identity;
+		int beg = 0;
+		if(shift < 0) {
+			beg = -shift;
+			shift = 0;
+		}
 		for(int[] pair : partitions) {
-			for(int i=pair[0]; i<pair[1]; i++) {
+			for(int i=max(shift+pair[0], beg); i<min(shift+pair[1], list.size()); i++) {
 				acc = fn.apply(acc, list.get(i));
 			}
 		}
 		return acc;
 	}
 	
-	public <R> R apply(R identity, IntFunction<R> fn, BinaryOperator<R> op) {
-
-		R acc = identity;
-		for(int[] pair : partitions) {
-			for(int i=pair[0]; i<pair[1]; i++) {
-				acc = op.apply(acc, fn.apply(i));
-			}
-		}
-		return acc;
-	}
-	
-	
 	@Override
 	public String toString() {
-		return model + " : " + Arrays.toString(partitions);
+		return model + " : " + Stream.of(partitions)
+			.map(arr-> '[' + arr[0] + "-" + arr[1] + ']')
+			.collect(joining(" "));
 	}
 	
 	public static <M> SingleModelGroupPart<M> emptyPartition(M model) {

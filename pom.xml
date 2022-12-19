@@ -5,16 +5,26 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.usf</groupId>
+	<groupId>io.github.oneteme</groupId>
 	<artifactId>jinterval</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
 	<name>java-interval</name>
-	<contributors>
-		<contributor>
-			<name>u$f</name>
-			<email>usf.alami@gmail.com</email>
-		</contributor>
-	</contributors>
+  <developers>
+    <developer>
+      <name>u$f</name>
+      <email>usf.alami@gmail.com</email>
+      <organization>ENEDIS</organization>
+      <organizationUrl>http://www.enedis.fr</organizationUrl>
+    </developer>
+  </developers>
+  
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
 	<properties>
 		<java.version>11</java.version>
@@ -62,10 +72,14 @@
 	</build>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
     <repository>
-      <id>github</id>
-      <name>GitHub JInterval Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/oneteme/jinterval</url>
+      <id>ossrh</id>
+      <name>Central Repository OSSRH</name>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 

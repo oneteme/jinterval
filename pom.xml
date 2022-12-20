@@ -25,6 +25,11 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+  
+  
+  <scm>
+    <url>https://github.com/oneteme/jinterval</url>
+  </scm>
 
 	<properties>
 		<java.version>11</java.version>

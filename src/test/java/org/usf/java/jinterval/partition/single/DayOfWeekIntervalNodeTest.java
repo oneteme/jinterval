@@ -9,13 +9,14 @@ import static java.time.DayOfWeek.TUESDAY;
 import static java.time.DayOfWeek.WEDNESDAY;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.usf.java.jinterval.Utils.UTC;
 import static org.usf.java.jinterval.Utils.zdt;
 import static org.usf.java.jinterval.core.ImmutableInterval.regularInterval;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -87,7 +88,7 @@ class DayOfWeekIntervalNodeTest {
 	@MethodSource("caseFactory")
 	<M> void test(SingleModelPartition<M> expected, List<Node<String>> nodes) {
 
-		SingleModelPartition<String> res = new Node<String>(null, nodes).partitions(expected.getStart().atZone(ZoneId.systemDefault()), expected.getEndExclusive().atZone(ZoneId.systemDefault()), expected.getStep());
+		SingleModelPartition<String> res = new Node<String>(null, nodes).partitions(expected.getStart().atZone(UTC()), expected.getEndExclusive().atZone(UTC()), expected.getStep());
 		assertEquals(expected.getStart(), res.getStart());
 		assertEquals(expected.getEndExclusive(), res.getEndExclusive());
 		assertEquals(expected.getStep(), res.getStep());
@@ -110,25 +111,24 @@ class DayOfWeekIntervalNodeTest {
 							new DayOfWeekIntervalNode<>("FULL WEEK", FRIDAY, FRIDAY, null))),
 			
     		Arguments.of(
-    				expected("2019-12-31T23:00:00Z", "2020-01-01T23:00:00Z", 3600),
+    				expected("2019-12-31T23:00:00Z", "2020-01-01T23:00:00Z", 3600, new SingleModelPart<>(0, 1, "!WEDNESDAY")),
     				Arrays.asList(
     						new DayOfWeekIntervalNode<>("!WEDNESDAY", THURSDAY, WEDNESDAY, null))),
 
     		Arguments.of(
     				expected("2020-01-01T17:00:00Z", "2020-01-02T22:00:00Z", 600, 
-							new SingleModelPart<>(0, 36, "MODEL")),
+							new SingleModelPart<>(0, 42, "MODEL")),
     				Arrays.asList(
     						new DayOfWeekIntervalNode<>("MODEL", FRIDAY, THURSDAY, null))),
 
     		Arguments.of(
     				expected("2020-01-01T17:00:00Z", "2020-01-05T22:00:00Z", 600, 
-							new SingleModelPart<>(0, 36, "MODEL"), new SingleModelPart<>(180, 606, "MODEL")),
+							new SingleModelPart<>(0, 42, "MODEL"), new SingleModelPart<>(186, 606, "MODEL")),
     				Arrays.asList(
     						new DayOfWeekIntervalNode<>("MODEL", FRIDAY, THURSDAY, null)))
 			);
-	    
 	}
-	
+
 	private static void testAdjustInterval(DayOfWeek start, DayOfWeek endExclusive, ZonedDateTime zdt, ZonedDateTime es, ZonedDateTime ee) {
 		
 		var in = new DayOfWeekIntervalNode<String>("", start, endExclusive).adjustInterval(zdt);

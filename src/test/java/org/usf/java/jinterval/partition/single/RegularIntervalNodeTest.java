@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.usf.java.jinterval.Utils.UTC;
 import static org.usf.java.jinterval.Utils.zdt;
 import static org.usf.java.jinterval.partition.single.RegularIntervalNode.ofLocal;
 
@@ -12,13 +13,14 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
+import org.usf.java.jinterval.Utils;
 
 class RegularIntervalNodeTest {
 	
 	@Test
 	void testAdjustInterval_localDate() {
 		
-		var n = ofLocal("", LocalDate.of(2022, 1, 1), LocalDate.of(2022, 2, 1), null);
+		var n = ofLocal("", LocalDate.of(2022, 1, 1), LocalDate.of(2022, 2, 1), UTC(), null);
 
 		assertPartition(n, zdt(2021, 1, 1, 0), zdt(2022, 1, 1, 0), 1800, emptyList()); //before
 		assertPartition(n, zdt(2022, 2, 1, 0), zdt(2023, 1, 1, 0), 1800, emptyList()); //after

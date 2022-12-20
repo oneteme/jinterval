@@ -1,13 +1,13 @@
 package org.usf.java.jinterval.partition.single;
 
 import static java.lang.Math.min;
-import static java.time.ZoneId.systemDefault;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -59,35 +59,31 @@ public final class RegularIntervalNode<M> extends Node<M> implements Interval<Zo
 		return deepApply(zdt, from, to, step);
 	}
 	
-	public static <M> RegularIntervalNode<M> ofInstant(M model, Instant start, Instant exclusifEnd, List<Node<M>> childrens) {
+	public static <M> RegularIntervalNode<M> ofInstant(M model, Instant start, Instant exclusifEnd, ZoneId zoneId, List<Node<M>> childrens) {
 		
-		var zoneId = systemDefault();
 		return new RegularIntervalNode<>(model, 
 				ZonedDateTime.ofInstant(requireNonNull(start), zoneId), 
 				ZonedDateTime.ofInstant(requireNonNull(exclusifEnd), zoneId), 
 				childrens);
 	}
 
-	public static <M> RegularIntervalNode<M> ofLocal(M model, LocalDateTime start, LocalDateTime exclusifEnd, List<Node<M>> childrens) {
+	public static <M> RegularIntervalNode<M> ofLocal(M model, LocalDateTime start, LocalDateTime exclusifEnd, ZoneId zoneId, List<Node<M>> childrens) {
 
-		var zoneId = systemDefault();
 		return new RegularIntervalNode<>(model, 
 				ZonedDateTime.of(requireNonNull(start), zoneId),
 				ZonedDateTime.of(requireNonNull(exclusifEnd), zoneId), 
 				childrens);
 	}
 	
-	public static <M> RegularIntervalNode<M> ofLocal(M model, LocalDate start, LocalDate exclusifEnd, List<Node<M>> childrens) {
+	public static <M> RegularIntervalNode<M> ofLocal(M model, LocalDate start, LocalDate exclusifEnd, ZoneId zoneId, List<Node<M>> childrens) {
 
-		var zoneId = systemDefault();
 		return new RegularIntervalNode<>(model, 
 				requireNonNull(start).atStartOfDay(zoneId), 
 				requireNonNull(exclusifEnd).atStartOfDay(zoneId), 
 				childrens);
 	}
-	public static <M> RegularIntervalNode<M> ofYear(M model, int start, int exclusifEnd, List<Node<M>> childrens) {
+	public static <M> RegularIntervalNode<M> ofYear(M model, int start, int exclusifEnd, ZoneId zoneId, List<Node<M>> childrens) {
 
-		var zoneId = systemDefault();
 		return new RegularIntervalNode<>(model, 
 				LocalDate.of(start, 1, 1).atStartOfDay(zoneId), 
 				LocalDate.of(exclusifEnd, 1, 1).atStartOfDay(zoneId), 

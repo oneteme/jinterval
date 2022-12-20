@@ -3,6 +3,7 @@ package org.usf.java.jinterval.partition.single;
 import static java.time.LocalTime.MIN;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.usf.java.jinterval.Utils.UTC;
 import static org.usf.java.jinterval.Utils.zdt;
 import static org.usf.java.jinterval.core.ImmutableInterval.regularInterval;
 
@@ -102,7 +103,7 @@ class TimeIntervalNodeTest {
 	@MethodSource("caseFactory")
 	<M> void test(SingleModelPartition<M> expected, List<Node<String>> nodes) {
 
-		SingleModelPartition<String> res = new Node<String>(null, nodes).partitions(expected.getStart().atZone(ZoneId.systemDefault()), expected.getEndExclusive().atZone(ZoneId.systemDefault()), expected.getStep());
+		SingleModelPartition<String> res = new Node<String>(null, nodes).partitions(expected.getStart().atZone(UTC()), expected.getEndExclusive().atZone(UTC()), expected.getStep());
 		assertEquals(expected.getStart(), res.getStart());
 		assertEquals(expected.getEndExclusive(), res.getEndExclusive());
 		assertEquals(expected.getStep(), res.getStep());
@@ -119,21 +120,21 @@ class TimeIntervalNodeTest {
     						new TimeIntervalNode<>("HOURS", LocalTime.MIN, LocalTime.MIN, null))),
 
     		Arguments.of(
-    				expected("2019-12-31T11:00:00Z", "2019-12-31T14:00:00Z", 3600),
+    				expected("2019-12-31T11:00:00Z", "2019-12-31T14:00:00Z", 3600, new SingleModelPart<>(0, 1, "1")),
     				Arrays.asList(
     						new TimeIntervalNode<>("1", LocalTime.of(8, 00), LocalTime.of(12, 00), null),
 							new TimeIntervalNode<>("2", LocalTime.of(15, 00), LocalTime.of(18, 00), null))),
 
     		Arguments.of(
     				expected("2019-12-31T10:45:00Z", "2019-12-31T14:15:00Z", 900, 
-    						new SingleModelPart<>(0, 1, "1"), new SingleModelPart<>(13, 14, "2")),
+    						new SingleModelPart<>(0, 5, "1")),
     				Arrays.asList(
     						new TimeIntervalNode<>("1", LocalTime.of(8, 00), LocalTime.of(12, 00), null),
 							new TimeIntervalNode<>("2", LocalTime.of(15, 00), LocalTime.of(18, 00), null))),
 	    		
     		Arguments.of(
     				expected("2020-01-01T23:00:00Z", "2020-01-02T23:00:00Z", 1800,
-    						new SingleModelPart<>(0, 24, "AM"), new SingleModelPart<>(24, 48, "PM")),
+    						new SingleModelPart<>(0, 2, "PM"), new SingleModelPart<>(2, 26, "AM"), new SingleModelPart<>(26, 48, "PM")),
     				Arrays.asList(
     						new TimeIntervalNode<>("AM", LocalTime.MIN, LocalTime.NOON, null), 
     						new TimeIntervalNode<>("PM", LocalTime.NOON, LocalTime.MIN, null))),
@@ -141,7 +142,7 @@ class TimeIntervalNodeTest {
     		Arguments.of(
 				expected("2020-01-01T00:00:00Z", "2020-01-02T00:00:00Z", 600,
 						new SingleModelPart<>(0, 144, "ELSE"), 
-						new SingleModelPart<>(0, 66, "AM"), new SingleModelPart<>(66, 138, "PM"), new SingleModelPart<>(138, 144, "AM")),
+						new SingleModelPart<>(0, 72, "AM"), new SingleModelPart<>(72, 144, "PM")),
 				Arrays.asList(
 						new TimeIntervalNode<>("ELSE", LocalTime.MIN, LocalTime.MIN, null),
 						new TimeIntervalNode<>("AM", LocalTime.MIN, LocalTime.NOON, null), 
@@ -149,11 +150,11 @@ class TimeIntervalNodeTest {
 
     		Arguments.of(
     				expected("2020-01-01T23:00:00Z", "2020-01-02T23:00:00Z", 60,
-    						new SingleModelPart<>(0, 420, "AM"), new SingleModelPart<>(420, 585, "AMP"), 
-    						new SingleModelPart<>(585, 700, "AM"), new SingleModelPart<>(700, 720, "AMP"),
+    						new SingleModelPart<>(60, 480, "AM"), new SingleModelPart<>(480, 645, "AMP"), 
+    						new SingleModelPart<>(645, 760, "AM"), new SingleModelPart<>(760, 780, "AMP"),
     						
-    						new SingleModelPart<>(720, 837, "PMP"), new SingleModelPart<>(837, 1053, "PM"), 
-    						new SingleModelPart<>(1053, 1140, "PMP"), new SingleModelPart<>(1140, 1440, "PM")
+    						new SingleModelPart<>(780, 897, "PMP"), new SingleModelPart<>(897, 1113, "PM"), 
+    						new SingleModelPart<>(1113, 1200, "PMP"), new SingleModelPart<>(1200, 1440, "PM")
     					),
     				Arrays.asList(
     						new TimeIntervalNode<>("AM", LocalTime.MIN, LocalTime.NOON, Arrays.asList(

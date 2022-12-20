@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,6 +63,10 @@ public final class Utils {
 	
 	public static ZonedDateTime zdt(int y, int m, int d, int h, int mi) {
 		
-		return ZonedDateTime.of(LocalDate.of(y, m, d), LocalTime.of(h, mi), systemDefault());
+		return ZonedDateTime.of(LocalDate.of(y, m, d), LocalTime.of(h, mi), UTC());
+	}
+	
+	public static ZoneId UTC() {
+		return ZoneId.of("UTC");
 	}
 }

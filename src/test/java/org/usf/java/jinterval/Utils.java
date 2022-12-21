@@ -1,6 +1,6 @@
 package org.usf.java.jinterval;
 
-import static java.time.ZoneId.systemDefault;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

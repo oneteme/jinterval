@@ -55,6 +55,7 @@ public final class RegularIntervalNode<M> extends Node<M> implements Interval<Zo
 			if(from >= to) {
 				return emptyList();
 			}
+			return deepApply(startInclusive, from, to, step);
 		}
 		return deepApply(zdt, from, to, step);
 	}

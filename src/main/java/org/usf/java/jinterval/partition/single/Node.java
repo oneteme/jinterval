@@ -63,19 +63,24 @@ public class Node<M> {
 		}
 		var parts = getChildrens().stream().flatMap(n-> n.apply(zdt, from, to, step).stream()).collect(toList());
 		var tmp = new ArrayList<SingleModelPart<M>>();
-		if(getModel() != null && !parts.isEmpty()) {
-			parts.sort(PARTITON_COMPARATOR);
-			if(parts.get(0).getStartIndex() > from) {
-				tmp.add(new SingleModelPart<>(from, parts.get(0).getStartIndex(), getModel()));
+		if(getModel() != null) {
+			if(parts.isEmpty()) {
+				tmp.add(new SingleModelPart<>(from, to, getModel()));
 			}
-			parts.stream().reduce((prv, nxt)-> {
-				if(nxt.getStartIndex() > prv.getEndExclusiveIndex()) {
-					tmp.add(new SingleModelPart<>(prv.getEndExclusiveIndex(), nxt.getStartIndex(), getModel()));
+			else {
+				parts.sort(PARTITON_COMPARATOR);
+				if(parts.get(0).getStartIndex() > from) {
+					tmp.add(new SingleModelPart<>(from, parts.get(0).getStartIndex(), getModel()));
 				}
-				return nxt;
-			});
-			if(parts.get(parts.size()-1).getEndExclusiveIndex() < to) {
-				tmp.add(new SingleModelPart<>(parts.get(parts.size()-1).getEndExclusiveIndex(), to, getModel()));
+				parts.stream().reduce((prv, nxt)-> {
+					if(nxt.getStartIndex() > prv.getEndExclusiveIndex()) {
+						tmp.add(new SingleModelPart<>(prv.getEndExclusiveIndex(), nxt.getStartIndex(), getModel()));
+					}
+					return nxt;
+				});
+				if(parts.get(parts.size()-1).getEndExclusiveIndex() < to) {
+					tmp.add(new SingleModelPart<>(parts.get(parts.size()-1).getEndExclusiveIndex(), to, getModel()));
+				}
 			}
 			parts.addAll(tmp); //optim 
 		}

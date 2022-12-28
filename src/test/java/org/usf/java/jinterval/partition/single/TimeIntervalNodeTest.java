@@ -149,7 +149,8 @@ class TimeIntervalNodeTest {
 						new TimeIntervalNode<>("PM", LocalTime.NOON, LocalTime.MIN, null))),
 
     		Arguments.of(
-    				expected("2020-01-01T23:00:00Z", "2020-01-02T23:00:00Z", 60,
+    				expected("2020-01-01T23:00:00Z", "2020-01-02T23:00:00Z", 60, 
+    						new SingleModelPart<>(0, 60, "PM"),
     						new SingleModelPart<>(60, 480, "AM"), new SingleModelPart<>(480, 645, "AMP"), 
     						new SingleModelPart<>(645, 760, "AM"), new SingleModelPart<>(760, 780, "AMP"),
     						

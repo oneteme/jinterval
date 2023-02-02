@@ -3,13 +3,13 @@ package org.usf.java.jinterval.partition.single;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static org.usf.java.jinterval.core.TemporalUtils.nStepBetween;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.usf.java.jinterval.core.Curve;
 import org.usf.java.jinterval.core.Interval;
@@ -31,30 +31,26 @@ public final class SingleModelGroupPartition<M> implements Interval<Instant> {
 	private final int secondStep;
 	private final List<SingleModelGroupPart<M>> partitions;
 
-	public <T, R> List<R> apply(List<T> list, Function<M, R> identity, BiFunction<R, T, R> fn) {
+	public <T, R> Stream<R> apply(List<T> list, Function<M, R> identity, BiFunction<R, T, R> fn) {
 		return partitions.stream()
-			.map(p-> p.apply(list, identity.apply(p.getModel()), fn))
-			.collect(toList());
+			.map(p-> p.apply(list, identity.apply(p.getModel()), fn));
 	}
 
-	public <T, U, R> List<R> apply(List<T> list, U identity, BiFunction<U, T, U> fn, BiFunction<M, U, R> finisher) {
+	public <T, U, R> Stream<R> apply(List<T> list, U identity, BiFunction<U, T, U> fn, BiFunction<M, U, R> finisher) {
 		return partitions.stream()
-			.map(p-> finisher.apply(p.getModel(), p.apply(list, identity, fn)))
-			.collect(toList());
+			.map(p-> finisher.apply(p.getModel(), p.apply(list, identity, fn)));
 	}
 	
-	public <T, R> List<R> apply(Curve<T> curve, Function<M, R> identity, BiFunction<R, T, R> fn) {
+	public <T, R> Stream<R> apply(Curve<T> curve, Function<M, R> identity, BiFunction<R, T, R> fn) {
 		var shift = shiftIndex(curve); //can be negative
 		return partitions.stream()
-			.map(p-> p.apply(shift, curve.points(), identity.apply(p.getModel()), fn))
-			.collect(toList());
+			.map(p-> p.apply(shift, curve.points(), identity.apply(p.getModel()), fn));
 	}
 
-	public <T, U, R> List<R> apply(Curve<T> curve, U identity, BiFunction<U, T, U> fn, BiFunction<M, U, R> finisher) {
+	public <T, U, R> Stream<R> apply(Curve<T> curve, U identity, BiFunction<U, T, U> fn, BiFunction<M, U, R> finisher) {
 		var shift = shiftIndex(curve); //can be negative
 		return partitions.stream()
-			.map(p-> finisher.apply(p.getModel(), p.apply(shift, curve.points(), identity, fn)))
-			.collect(toList());
+			.map(p-> finisher.apply(p.getModel(), p.apply(shift, curve.points(), identity, fn)));
 	}
 	
 	private final int shiftIndex(Curve<?> curve) {

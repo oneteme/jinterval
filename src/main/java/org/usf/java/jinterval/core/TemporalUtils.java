@@ -10,8 +10,11 @@ import lombok.NoArgsConstructor;
 public final class TemporalUtils {
 
 	public static long nStepBetween(Temporal startInclusive, Temporal exclusifEnd, int step, ChronoUnit unit) {
-
-		return unit.between(startInclusive, exclusifEnd) / step;
+    	var diff = unit.between(startInclusive, exclusifEnd);
+		if(diff % step == 0) {
+			return diff / step;
+		}
+        throw new IllegalArgumentException("duration % step != 0");
 	}
 
 }

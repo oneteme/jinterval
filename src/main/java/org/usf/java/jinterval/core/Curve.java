@@ -4,6 +4,7 @@ import static java.lang.Math.max;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static org.usf.java.jinterval.core.TemporalUtils.nStepBetween;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -11,12 +12,10 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
-import java.util.function.LongPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 
-public interface Curve<T> extends Interval<Instant> {
+public interface Curve<T> extends TemporalInterval<Instant> {
 	
 	short secondStep(); 
 	
@@ -40,14 +39,16 @@ public interface Curve<T> extends Interval<Instant> {
 	}
 	
 	private List<T> subPeriod(Instant start, Instant endExclusive, BiFunction<Long, Instant, Long> fn) { 
-		var d1 = secondBetween(startInclusive(), start, secondStep(), ()-> "illegal timestamp " + start);
-		var d2 = secondBetween(endExclusive, endExclusive(), secondStep(), ()-> "illegal timestamp " + endExclusive);
-		var fromIndex = fn.apply(d1, start) / secondStep();
-		var toIndex = points().size() - fn.apply(d2, endExclusive) / secondStep();
-		if(fromIndex <= toIndex) { // fromIndex == toIndex => empty ?
-			return subPoints((int) fromIndex, (int) toIndex);
+		var d1 = SECONDS.between(startInclusive(), start);
+		var d2 = SECONDS.between(endExclusive, endExclusive());
+		if(d1 % secondStep() == 0 && d2 % secondStep() == 0) {
+			var fromIndex = fn.apply(d1, start) / secondStep();
+			var toIndex = points().size() - fn.apply(d2, endExclusive) / secondStep();
+			if(fromIndex <= toIndex) { // fromIndex == toIndex => empty ?
+				return subPoints((int) fromIndex, (int) toIndex);
+			}
 		}
-		throw new IllegalArgumentException("illegal interval " + IntervalUtils.toString(fromIndex, toIndex));
+		throw new IllegalArgumentException("mismatch period " + IntervalUtils.toString(start, endExclusive));
 	}
 	
 	default List<T> subPoints(int fromIndex, int toIndex){
@@ -71,39 +72,27 @@ public interface Curve<T> extends Interval<Instant> {
 			}
 			return points;
 		}
-		throw new IllegalArgumentException("step mismatch");
+		throw new IllegalArgumentException("mismatch curve");
 	}
 
 	default boolean isCompleteCurve() {
-		return match(n-> n == points().size());
+		return unitCount() == points().size();
 	}
 	
 	default boolean isMissingPoints() {
-		return match(n-> n > points().size());
+		return unitCount() > points().size();
 	}
 	
 	default boolean isOverTakingPoints() {
-		return match(n-> n < points().size());
+		return unitCount() < points().size();
 	}
 	
-	private boolean match(LongPredicate test) {
-		return test.test(pointCountBetween(startInclusive(), endExclusive(), secondStep()));
-	}
-	
-	private static long pointCountBetween(Instant t1, Instant t2, int step) {
-		return secondBetween(t1, t2, step, ()-> "invalid interval " + IntervalUtils.toString(t1, t2)) / step;
-	}
-
-	private static long secondBetween(Instant t1, Instant t2, int step, Supplier<String> msg) {
-		var diff = SECONDS.between(t1, t2);
-		if(diff % step == 0) {
-			return diff;
-		}
-		throw new IllegalArgumentException(msg.get());
+	private long unitCount() {
+		return unitCount(SECONDS, secondStep());
 	}
 	
 	public static <T> List<T> create(Instant start, Instant endExclusive, int step, IntFunction<T> factory){
-		var n = (int) pointCountBetween(start, endExclusive, step);
+		var n = (int) nStepBetween(start, endExclusive, step, SECONDS);
 		return range(0, n).mapToObj(factory).collect(toList());
 	}
 	

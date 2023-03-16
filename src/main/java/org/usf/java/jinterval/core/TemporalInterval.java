@@ -17,6 +17,10 @@ public interface TemporalInterval<T extends Temporal & Comparable<? super T>> ex
     }
     
     default long unitCount(ChronoUnit unit, int step) {
-        return duration(unit) / step;
+    	var diff = duration(unit);
+		if(diff % step == 0) {
+			return diff / step;
+		}
+        throw new IllegalArgumentException("duration % step != 0");
     }
 }
